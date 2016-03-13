@@ -26,12 +26,6 @@ for (var i=0; i<(datablob.false_statements.length); i++) {
     });
 }
 
-var PlayerList = [];
-
-function activePlayerList() {
-    return PlayerList;
-}
-
 //player object
 class player {
     constructor(id, active) {
@@ -50,15 +44,14 @@ class player {
     }
 }
 
+var Player_1 = new player(1, true);
+var Player_2 = new player(2, false);
+
 function activePlayer() {
-    for (var i = 0; i<PlayerList.length; i++) {
-        var temp = PlayerList[i].activePlayer();
-        if (PlayerList[i].activePlayer()) {
-            return temp;
-            break;
-        }
-    }
+    var player = Player_1.isActive() ? Player_1 : Player_2;
+    return player;
 }
+
 //appstore event emitter
 var AppStore = assign(EventEmitter.prototype, {
     emitChange: function(change) {
@@ -79,17 +72,26 @@ var AppStore = assign(EventEmitter.prototype, {
         return trueList;
     },
     addPlayerScore: function() {
-       activePlayer().addScore();
+        activePlayer().addScore();
     }, 
     //event dispatcher
-    getScore: function() {
-       return activePlayer().score;
+    getScore1: function() {
+        return Player_1.score;
+    },
+    getScore2: function() {
+        return Player_2.score;
     },
     //event dispatcher
     dispatcherIndex: AppDispatcher.register(function(payload) {
         var action = payload.action;
         var player = activePlayer();
         switch(action.actionType) {
+            case "SCORE": 
+                if (payload.action.answer) {
+                    player.addPlayerScore(); 
+                    AppStore.emitChange('increase_score');
+                }
+            break;
         return true; 
         }
     })
