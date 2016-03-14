@@ -10,23 +10,28 @@ App = React.createClass({
             player2: AppStore.getScore2(),
             currPlayer: 1,
             currState: 1,
+            body: PlayerQuestions,
             showResults: true,
             flipscreen: false
         }
     },
    
     componentWillMount: function() {
+        AppStore.addChangeListener('finalstate');
         AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
         AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
-        AppStore.addChangeListener('increase_score', this._onChange);
     },
     _fliptoChange: function() {
         this.setState({
             flipscreen: true,
             currPlayer: AppStore.switchPlayer(),
             body: Flipscreen,
-
- 
+    },
+    _flipfromChange: function() {
+        //check score for final screen
+        this.setState({
+            flipscreen: false,
+            body: PlayerQuestions,
     render: {
         return (
             <div>
