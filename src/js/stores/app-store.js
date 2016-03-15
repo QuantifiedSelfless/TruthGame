@@ -114,20 +114,24 @@ var AppStore = assign(EventEmitter.prototype, {
     dispatcherIndex: AppDispatcher.register(function(payload) {
         var action = payload.action;
         var player = activePlayer();
+        var player_id = Player_1.isActive() ? 1 : 2;
         switch(action.actionType) {
             case "SCORE": 
                 if (payload.action.answer) {
-                    player.addPlayerScore(); 
-                    AppStore.emitChange('score_update');
+                    player.addPlayerScore();
+                    AppStore.emitChange('score_update' + player_id);
                 }
                 AppStore.emitChange('update_question');
                 break;
+
             case "SWITCH_TO_FLIPSCREEN":
                 AppStore.emitChange('switch_to_flipscreen');
                 break;
+
             case "SWITCH_FROM_FLIPSCREEN":
                 AppStore.emitChange('switch_from_flipscreen");
                 break;
+
         return true; 
         }
     })

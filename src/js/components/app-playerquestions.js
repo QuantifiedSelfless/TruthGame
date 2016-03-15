@@ -17,15 +17,22 @@ PlayerQuestions = React.createClass({
     componentWillMount: function() {
         AppStore.addChangeListener('update_question', this._onChange);
     },
-    
+
+    componentWillUnmount: function() {
+        AppStore.removeChangeListener('update_question', this._onChange);
+    },
+
     _onChange: function() {
+        if (this.state.question_state == 5) { 
+            this.handler; 
+            return 0; 
+        }
         this.setState({ question_state: this.state.question_state + 1 });
     },
         
     render: function() {
         var true_items = [];
-        var false_items = [];
-        
+        var false_items = []; 
         for (var i=0; i<5; i++) {
 
             true_items.push(this.props.truth.map( function(item, i) {
@@ -44,8 +51,10 @@ PlayerQuestions = React.createClass({
 
         return  (
             <div>
-                <div>{true_items[this.state.question_state]}</div>
-                <div>{false_items[this.state.question_state]}</div>
+                <div>
+                    {true_items[this.state.question_state]}
+                    {false_items[this.state.question_state]}
+                </div>
             </div>
         );
     }
