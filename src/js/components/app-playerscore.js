@@ -1,4 +1,5 @@
 React = require('react');
+AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
 
 var PlayerScore = React.createClass({
@@ -24,9 +25,12 @@ var PlayerScore = React.createClass({
 
     render: function() {
         return (
-            <h2>{this.state.player}<h2>
-            <h2>{this.state.score}<h2>
-        )
+            <div>
+                <h2>{"Player " + this.props.player + "\'s Score: "}</h2>
+                <h2>{this.state.score}</h2>
+            </div>
+        );
     }
 });
+
 module.exports = PlayerScore;          

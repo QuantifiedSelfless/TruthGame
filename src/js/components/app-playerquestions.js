@@ -10,9 +10,6 @@ PlayerQuestions = React.createClass({
             question_state: 0
         }
     },
-    handler: function() {
-        AppActions.flipToScreen()
-    },
     
     componentWillMount: function() {
         AppStore.addChangeListener('update_question', this._onChange);
@@ -23,31 +20,21 @@ PlayerQuestions = React.createClass({
     },
 
     _onChange: function() {
-        if (this.state.question_state == 5) { 
-            this.handler; 
-            return 0; 
-        }
         this.setState({ question_state: this.state.question_state + 1 });
     },
         
     render: function() {
-        var true_items = [];
-        var false_items = []; 
-        for (var i=0; i<5; i++) {
+        var true_items = this.props.truth.map( function(item, i) {
+            return (
+                <PlayerAnswer item={item} />
+            )
+        })
 
-            true_items.push(this.props.truth.map( function(item, i) {
-                return (
-                    <PlayerAnswer item={item} key={i}/>
-                )
-            }))
-
-            false_items.push(this.props.lies.map( function(item, i) {
-                return (
-                    <PlayerAnswer item={item} key={i}/>
-                )
-            }))
-
-        }
+        var false_items = this.props.lies.map( function(item, i) {
+            return (
+                <PlayerAnswer item={item} />
+            )
+        })
 
         return  (
             <div>

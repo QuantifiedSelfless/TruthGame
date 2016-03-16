@@ -1,80 +1,91 @@
 'use strict';
-var React = require('react');
+var AppDispatcher = require('../dispatchers/app-dispatcher.js');
 var assign = require('react/lib/Object.assign');
-var EventEmitter = require('event').EventEmitter;
+var EventEmitter = require('events').EventEmitter;
+
+function randomArr(range) {
+    var arr = [];
+    //i determines how many random numbers, t determines the range. Range will be based on how many questions are currently in this.total
+    for (var i=0; i<5; i++) {
+        arr.push(Math.round(Math.random() * range))
+    }
+    return arr;
+}
+
 
 class questions {
+
     constructor(datablob, answer) {
         this.total = datablob;
         this.answer = answer;
         this.buttonList = [];
-    },
-    randomArr: function() {
-        var arr = [];
-        //i determines how many random numbers, t determines the range. Range will be based on how many questions are currently in this.total
-        for (var i=0, t=this.total.length; i<5; i++) {
-            arr.push(Math.round(Math.random() * t))
-        }
-        return arr;
-    },
-    create_button_list: function() {
-        random_questions = randomArr();
+    }
+ 
+    create_button_list() {
+        var random_questions = randomArr(this.total.length - 1);
         for (var i = 0; i<5; i++) {
-            buttonList.push({
+            this.buttonList.push({
                 'id': i + 1,
                 'title': this.total[random_questions[i]],
                 'answer': this.answer
             });
             this.total.splice(random_questions[i], 1);
         }
-    },
-    clearButtons: function() {
-        buttonList = [];
+        return this.buttonList;
+    }
+
+    clearButtons() {
+        this.buttonList = [];
     }
 }
 
      
-var false_statements = ['You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', ''];
+var false_statements = ['You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
 
 //replace with database call
-var player1_statements = ['You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm''You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account']; 
+var player1_statements = ['You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
+
 var player2_statements = [''];
 
-App_questions = new questions(false_statements, false);
-player1_questions = new questions(player1_statements, true);
-player2_questions = new questions(player2_statements, false);
+var app_questions = new questions(false_statements, false);
+var player1_questions = new questions(player1_statements, true);
+var player2_questions = new questions(player2_statements, false);
 
 //player object
 class player {
+
     constructor(id, active) {
         this.id = 'player' + id;
         this.active = active;
         this.score = 0;
     }
+
     isActive() {
         return this.active;
     }
+
     flipActive() {
         this.active = !this.active;
     }
+
     addScore() {
         this.score++;
     }
 }
 
-var Player_1 = new player(1, true);
-var Player_2 = new player(2, false);
+var player_1 = new player(1, true);
+var player_2 = new player(2, false);
 
+function activeQuestions() {
+    var questions = player_1.isActive() ? player1_questions : player2_questions;
+    return questions;
+}
+   
 function activePlayer() {
-    var player = Player_1.isActive() ? Player_1 : Player_2;
+    var player = player_1.isActive() ? player_1 : player_2;
     return player;
 }
-
-function activeQuestion() {
-    var question = Player_1.isActive() ? player1_questions : player2_questions;
-    return question;
-}
-
+var count = 0;
 //appstore event emitter
 var AppStore = assign(EventEmitter.prototype, {
     emitChange: function(change) {
@@ -88,48 +99,58 @@ var AppStore = assign(EventEmitter.prototype, {
     },
 
     //game specific functions
-    getFalseList: function() {
-        return App_Questions.buttonList;
+    currentPlayer: function() {
+        return !player_1.isActive() ? 1 : 0;
+    },
+    switchPlayer: function() {
+        player_1.flipActive();
+        player_2.flipActive();
+        return player_1.isActive();
     },
     makeFalseList: function() {
-        return App_Questions.create_button_list;
+        return app_questions.create_button_list();
     },
-    getTrueList: function() {
-        return activeQuestion().buttonList;
-    },
+
     makeTrueList: function() {
-        return activeQuestion().create_button_list;
+        return activeQuestions().create_button_list();
     },
     addPlayerScore: function() {
         activePlayer().addScore();
     }, 
-    //event dispatcher
     getScore1: function() {
-        return Player_1.score;
+        return player_1.score;
     },
     getScore2: function() {
-        return Player_2.score;
+        return player_2.score;
     },
     //event dispatcher
     dispatcherIndex: AppDispatcher.register(function(payload) {
         var action = payload.action;
         var player = activePlayer();
-        var player_id = Player_1.isActive() ? 1 : 2;
+        var player_id = player_1.isActive() ? 1 : 2;
         switch(action.actionType) {
-            case "SCORE": 
-                if (payload.action.answer) {
-                    player.addPlayerScore();
+            case "CHANGE_SCORE":
+                if (payload.action.item.answer) {
+                    player.addScore();
                     AppStore.emitChange('score_update' + player_id);
                 }
+                console.log(count);
+                if (count == 4) {
+                    count = 0;
+                    AppStore.emitChange('switch_to_flipscreen');
+                    break; 
+                }
+                count++;
                 AppStore.emitChange('update_question');
                 break;
 
             case "SWITCH_TO_FLIPSCREEN":
+                activeQuestions().clearButtons();
                 AppStore.emitChange('switch_to_flipscreen');
                 break;
 
             case "SWITCH_FROM_FLIPSCREEN":
-                AppStore.emitChange('switch_from_flipscreen");
+                AppStore.emitChange('switch_from_flipscreen');
                 break;
 
         return true; 

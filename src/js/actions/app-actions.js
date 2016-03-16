@@ -11,13 +11,13 @@ var AppActions = {
 
     flipToScreen: function() {
         AppDispatcher.handleViewAction({
-            actionType: "FLIP_TO_SCREEN",
+            actionType: "SWITCH_TO_FLIPSCREEN",
         })
     },
 
     flipFromScreen: function() {
         AppDispatcher.handleViewAction({
-            actionType: "FLIP_FROM_SCREEN",
+            actionType: "SWITCH_FROM_FLIPSCREEN",
         })
     },
 

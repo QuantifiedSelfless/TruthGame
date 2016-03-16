@@ -13,8 +13,10 @@ App = React.createClass({
         return { 
             player1: AppStore.getScore1(),
             player2: AppStore.getScore2(),
-            currPlayer: AppStore.activePlayer(),
+            currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
+            t_question_list: AppStore.makeTrueList(),
+            f_question_list: AppStore.makeFalseList(),
             showResults: true,
             flipscreen: false
         }
@@ -25,12 +27,13 @@ App = React.createClass({
         AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
         AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
     },
+
     _fliptoChange: function() {
         this.setState({
             showResults: false,
             flipscreen: true,
             currPlayer: AppStore.switchPlayer(),
-            body: Flipscreen,
+            body: FlipScreen,
         });
     },
 
@@ -38,6 +41,7 @@ App = React.createClass({
         this.setState({
             flipscreen: false,
             body: PlayerQuestions,
+            t_question_list: AppStore.makeTrueList(),
             showResults: true
         });
     },
@@ -46,10 +50,10 @@ App = React.createClass({
         this.setState({
             showResults: false,
             body: FinalState
-        })
+        });
     },
 
-    render: {
+    render: function() {
         return (
             <div>
                 <div>
@@ -57,7 +61,7 @@ App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2}/> : null}</div>
                 </div>
                 <div>
-                    {this.state.body}
+                    <this.state.body truth={this.state.t_question_list} lies={this.state.f_question_list}/>
                 </div>
             </div>
         )
