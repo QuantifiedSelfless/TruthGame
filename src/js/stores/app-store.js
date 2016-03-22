@@ -1,17 +1,10 @@
 'use strict';
+
 var AppDispatcher = require('../dispatchers/app-dispatcher.js');
 var assign = require('react/lib/Object.assign');
 var EventEmitter = require('events').EventEmitter;
 
-function randomArr(range) {
-    var arr = [];
-    //i determines how many random numbers, t determines the range. Range will be based on how many questions are currently in this.total
-    for (var i=0; i<5; i++) {
-        arr.push(Math.round(Math.random() * range))
-    }
-    return arr;
-}
-
+var lodash = require('lodash');
 
 class questions {
 
@@ -22,15 +15,15 @@ class questions {
     }
  
     create_button_list() {
-        var random_questions = randomArr(this.total.length - 1);
+        this.total = lodash.shuffle(this.total); 
         for (var i = 0; i<5; i++) {
             this.buttonList.push({
                 'id': i + 1,
-                'title': this.total[random_questions[i]],
+                'title': this.total[i],
                 'answer': this.answer
             });
-            this.total.splice(random_questions[i], 1);
         }
+        this.total = lodash.slice(this.total, 5);
         return this.buttonList;
     }
 
@@ -45,11 +38,11 @@ var false_statements = ['You have used \"Your\" incorrectly on social media 74% 
 //replace with database call
 var player1_statements = ['You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
 
-var player2_statements = [''];
+var player2_statements = player1_statements;
 
 var app_questions = new questions(false_statements, false);
 var player1_questions = new questions(player1_statements, true);
-var player2_questions = new questions(player2_statements, false);
+var player2_questions = new questions(player2_statements, true);
 
 //player object
 class player {

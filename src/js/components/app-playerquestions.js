@@ -3,7 +3,7 @@ AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
 PlayerAnswer = require('./app-playeranswer.js');
 
-PlayerQuestions = React.createClass({ 
+var PlayerQuestions = React.createClass({ 
 
     getInitialState: function() {
         return { 

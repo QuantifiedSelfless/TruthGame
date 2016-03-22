@@ -1,4 +1,4 @@
-var AppDispatcher = require('../dispatchers/app-dispatcher.js');
+AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
 var AppActions = {
 

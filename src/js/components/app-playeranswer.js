@@ -1,5 +1,5 @@
-var React = require('react');
-var AppActions = require('../actions/app-actions.js');
+React = require('react');
+AppActions = require('../actions/app-actions.js');
 
 var PlayerAnswer = React.createClass({
 

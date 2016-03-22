@@ -1,6 +1,7 @@
 React = require('react');
+AppActions = require('../actions/app-actions.js');
 
-FlipScreen = React.createClass({
+var FlipScreen = React.createClass({
     
     handler: function() {
         AppActions.flipFromScreen()
