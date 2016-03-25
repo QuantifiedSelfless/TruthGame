@@ -1,7 +1,11 @@
 AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
 var AppActions = {
-
+    hideAnswer: function() {
+        AppDispatcher.handleViewAction({
+            actionType: "HIDE_ANSWER"
+        })
+    },
     changeScore: function(item) {
         AppDispatcher.handleViewAction({
             actionType: "CHANGE_SCORE",

@@ -10,7 +10,7 @@ PlayerScore = require('./app-playerscore.js');
 var App = React.createClass({
 
     getInitialState: function() {   
-        return { 
+        return {
             player1: 0,
             player2: 0,
             currPlayer: AppStore.currentPlayer(),
@@ -18,7 +18,8 @@ var App = React.createClass({
             t_question_list: AppStore.makeTrueList(),
             f_question_list: AppStore.makeFalseList(),
             showResults: true,
-            flipscreen: false
+            flipscreen: false,
+            showAnswer: false
         }
     },
    
@@ -28,16 +29,22 @@ var App = React.createClass({
         AppStore.addChangeListener('finalstate', this._finalstate);
         AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
         AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
+        AppStore.addChangeListener('show_answer', this._showAnswer);
+        AppStore.addChangeListener('update_question', this._hideAnswer);
     },
 
+    _showAnswer: function() {
+        this.setState({ showAnswer: true });
+    },
+    _hideAnswer: function() {
+        this.setState({ showAnswer: false });
+    },
     _onChange1: function() {
         this.setState({ player1: this.state.player1 + 1 });
     },
-
     _onChange2: function() {
         this.setState({ player2: this.state.player2 + 1 });
-    },
-
+    }, 
     _fliptoChange: function() {
         this.setState({
             showResults: false,
@@ -73,6 +80,8 @@ var App = React.createClass({
                 <div>
                     <this.state.body truth={this.state.t_question_list} lies={this.state.f_question_list}/>
                 </div>
+                <div>
+                    <div>{this.state.showAnswer ? <AnswerScreen answer={}/> : null}</div>
             </div>
         )
     }

@@ -34792,6 +34792,8 @@ AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
 PlayerAnswer = require('./app-playeranswer.js');
 
+lodash = require('lodash');
+
 var PlayerQuestions = React.createClass({displayName: "PlayerQuestions", 
 
     getInitialState: function() {
@@ -34824,12 +34826,13 @@ var PlayerQuestions = React.createClass({displayName: "PlayerQuestions",
                 React.createElement(PlayerAnswer, {item: item})
             )
         })
-
+        var items = [true_items, false_items] 
+        items = lodash.shuffle(items); 
         return  (
             React.createElement("div", null, 
                 React.createElement("div", null, 
-                    true_items[this.state.question_state], 
-                    false_items[this.state.question_state]
+                    items[0][this.state.question_state], 
+                    items[1][this.state.question_state]
                 )
             )
         );
@@ -34839,7 +34842,7 @@ var PlayerQuestions = React.createClass({displayName: "PlayerQuestions",
 
 module.exports = PlayerQuestions;
 
-},{"../actions/app-actions.js":164,"../stores/app-store.js":173,"./app-playeranswer.js":166,"react":163}],169:[function(require,module,exports){
+},{"../actions/app-actions.js":164,"../stores/app-store.js":173,"./app-playeranswer.js":166,"lodash":6,"react":163}],169:[function(require,module,exports){
 React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');

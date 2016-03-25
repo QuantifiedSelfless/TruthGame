@@ -3,6 +3,8 @@ AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
 PlayerAnswer = require('./app-playeranswer.js');
 
+lodash = require('lodash');
+
 var PlayerQuestions = React.createClass({ 
 
     getInitialState: function() {
@@ -35,12 +37,13 @@ var PlayerQuestions = React.createClass({
                 <PlayerAnswer item={item} />
             )
         })
-
+        var items = [true_items, false_items] 
+        items = lodash.shuffle(items); 
         return  (
             <div>
                 <div>
-                    {true_items[this.state.question_state]}
-                    {false_items[this.state.question_state]}
+                    {items[0][this.state.question_state]}
+                    {items[1][this.state.question_state]}
                 </div>
             </div>
         );

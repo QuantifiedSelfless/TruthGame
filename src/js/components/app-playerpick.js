@@ -1,7 +1,6 @@
 React = require('react')
 
 var PlayerPick = React.createClass({ 
-
     render: function() {
         return (
             <h3>{this.props.stuff ? "Player 1 is currently playing" : "Player 2 is currently playing"}</h3>

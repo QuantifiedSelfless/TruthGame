@@ -134,7 +134,7 @@ var AppStore = assign(EventEmitter.prototype, {
                     break; 
                 }
                 count++;
-                AppStore.emitChange('update_question');
+                AppStore.emitChange('show_answer');
                 break;
 
             case "SWITCH_TO_FLIPSCREEN":
@@ -145,7 +145,9 @@ var AppStore = assign(EventEmitter.prototype, {
             case "SWITCH_FROM_FLIPSCREEN":
                 AppStore.emitChange('switch_from_flipscreen');
                 break;
-
+            case "HIDE_ANSWER":
+                AppStore.emitChange('update_question');
+                break;
         return true; 
         }
     })
