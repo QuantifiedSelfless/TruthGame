@@ -1,22 +1,30 @@
 React = require('react');
+AppActions = require('../actions/app-actions.js');
 
 var AnswerScreen = React.createClass({
-    setInitialState: function() {
-       return { secondsElasped: 0 }
+    getInitialState: function() { 
+        return { 
+            secondsElasped: 0,
+        }
     },
     tick: function() {
-        if (this.secondsElasped == 5) { AppActions.hideAnswer() } 
-        this.setState({secondsElasped: this.secondsElasped + 1});
+        if (this.state.secondsElasped == 30) { 
+            clearInterval(this.interval);
+            AppActions.hideAnswer();
+        }
+        else {
+            this.setState({secondsElasped: this.state.secondsElasped + 1});
+        }
     }, 
     componentDidMount: function() {
-        this.interval = setInterval(this.tick, 5);
+        this.interval = setInterval(this.tick, 30);
     },
     componentWillUnmount: function() {
         clearInterval(this.interval);
     },
-    render: function() { 
+    render: function() {
         return (
-            <h1>{this.props.answer ? "Correct!" : "Incorrect!"}<h1>
+            <h1>{this.props.stuff ? "Correct!" : "Incorrect!"}</h1>
         )
     }
 });

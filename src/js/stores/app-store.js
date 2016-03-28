@@ -125,15 +125,12 @@ var AppStore = assign(EventEmitter.prototype, {
             case "CHANGE_SCORE":
                 if (payload.action.item.answer) {
                     player.addScore();
+                    if (player.score == 7) {
+                        AppStore.emitChange('finalstate');
+                        break;
+                    }
                     AppStore.emitChange('score_update' + player_id);
                 }
-                console.log(count);
-                if (count == 4) {
-                    count = 0;
-                    AppStore.emitChange('switch_to_flipscreen');
-                    break; 
-                }
-                count++;
                 AppStore.emitChange('show_answer');
                 break;
 
@@ -145,9 +142,17 @@ var AppStore = assign(EventEmitter.prototype, {
             case "SWITCH_FROM_FLIPSCREEN":
                 AppStore.emitChange('switch_from_flipscreen');
                 break;
+
             case "HIDE_ANSWER":
+                if (count == 4) {
+                    count = 0;
+                    AppStore.emitChange('switch_to_flipscreen');
+                    break; 
+                }
                 AppStore.emitChange('update_question');
+                count++;
                 break;
+         
         return true; 
         }
     })

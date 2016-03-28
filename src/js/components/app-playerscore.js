@@ -1,6 +1,4 @@
 React = require('react');
-AppStore = require('../stores/app-store.js');
-AppActions = require('../actions/app-actions.js');
 
 var PlayerScore = React.createClass({
 

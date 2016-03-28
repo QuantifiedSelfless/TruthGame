@@ -1,4 +1,4 @@
-React = require('react')
+React = require('react');
 
 var PlayerPick = React.createClass({ 
     render: function() {

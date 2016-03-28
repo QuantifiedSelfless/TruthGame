@@ -4,7 +4,6 @@ AppActions = require('../actions/app-actions.js');
 var PlayerAnswer = React.createClass({
 
     handler: function() {
-        console.log(this.props.item);
         AppActions.changeScore(this.props.item);
     },
 

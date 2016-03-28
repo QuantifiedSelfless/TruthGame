@@ -34704,7 +34704,11 @@ module.exports = require('./lib/React');
 AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
 var AppActions = {
-
+    hideAnswer: function() {
+        AppDispatcher.handleViewAction({
+            actionType: "HIDE_ANSWER"
+        })
+    },
     changeScore: function(item) {
         AppDispatcher.handleViewAction({
             actionType: "CHANGE_SCORE",
@@ -34728,7 +34732,52 @@ var AppActions = {
 
 module.exports = AppActions;
 
-},{"../dispatchers/app-dispatcher.js":171}],165:[function(require,module,exports){
+},{"../dispatchers/app-dispatcher.js":173}],165:[function(require,module,exports){
+React = require('react');
+AppActions = require('../actions/app-actions.js');
+
+var AnswerScreen = React.createClass({displayName: "AnswerScreen",
+    getInitialState: function() { 
+        return { 
+            secondsElasped: 0,
+        }
+    },
+    tick: function() {
+        if (this.state.secondsElasped == 30) { 
+            clearInterval(this.interval);
+            AppActions.hideAnswer();
+        }
+        else {
+            this.setState({secondsElasped: this.state.secondsElasped + 1});
+        }
+    }, 
+    componentDidMount: function() {
+        this.interval = setInterval(this.tick, 30);
+    },
+    componentWillUnmount: function() {
+        clearInterval(this.interval);
+    },
+    render: function() {
+        return (
+            React.createElement("h1", null, this.props.stuff ? "Correct!" : "Incorrect!")
+        )
+    }
+});
+module.exports = AnswerScreen;
+
+},{"../actions/app-actions.js":164,"react":163}],166:[function(require,module,exports){
+React = require('react');
+
+FinalState = React.createClass({displayName: "FinalState",
+    render: function() {
+        return (
+            React.createElement("h1", null, !this.props.stuff ? 'Player 1 is Victorious!' : 'Player 2 is Victorious')
+        )
+    }
+});
+module.exports = FinalState; 
+
+},{"react":163}],167:[function(require,module,exports){
 React = require('react');
 AppActions = require('../actions/app-actions.js');
 
@@ -34750,14 +34799,13 @@ var FlipScreen = React.createClass({displayName: "FlipScreen",
 
 module.exports = FlipScreen;
 
-},{"../actions/app-actions.js":164,"react":163}],166:[function(require,module,exports){
+},{"../actions/app-actions.js":164,"react":163}],168:[function(require,module,exports){
 React = require('react');
 AppActions = require('../actions/app-actions.js');
 
 var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
 
     handler: function() {
-        console.log(this.props.item);
         AppActions.changeScore(this.props.item);
     },
 
@@ -34771,11 +34819,10 @@ var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
 
 module.exports = PlayerAnswer; 
 
-},{"../actions/app-actions.js":164,"react":163}],167:[function(require,module,exports){
-React = require('react')
+},{"../actions/app-actions.js":164,"react":163}],169:[function(require,module,exports){
+React = require('react');
 
 var PlayerPick = React.createClass({displayName: "PlayerPick", 
-
     render: function() {
         return (
             React.createElement("h3", null, this.props.stuff ? "Player 1 is currently playing" : "Player 2 is currently playing")
@@ -34786,7 +34833,7 @@ var PlayerPick = React.createClass({displayName: "PlayerPick",
 
 module.exports = PlayerPick;
 
-},{"react":163}],168:[function(require,module,exports){
+},{"react":163}],170:[function(require,module,exports){
 React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
@@ -34842,10 +34889,8 @@ var PlayerQuestions = React.createClass({displayName: "PlayerQuestions",
 
 module.exports = PlayerQuestions;
 
-},{"../actions/app-actions.js":164,"../stores/app-store.js":173,"./app-playeranswer.js":166,"lodash":6,"react":163}],169:[function(require,module,exports){
+},{"../actions/app-actions.js":164,"../stores/app-store.js":175,"./app-playeranswer.js":168,"lodash":6,"react":163}],171:[function(require,module,exports){
 React = require('react');
-AppStore = require('../stores/app-store.js');
-AppActions = require('../actions/app-actions.js');
 
 var PlayerScore = React.createClass({displayName: "PlayerScore",
 
@@ -34861,7 +34906,7 @@ var PlayerScore = React.createClass({displayName: "PlayerScore",
 
 module.exports = PlayerScore;          
 
-},{"../actions/app-actions.js":164,"../stores/app-store.js":173,"react":163}],170:[function(require,module,exports){
+},{"react":163}],172:[function(require,module,exports){
 React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
@@ -34870,11 +34915,13 @@ FlipScreen = require('./app-flipscreen.js');
 PlayerPick = require('./app-playerpick.js');
 PlayerQuestions = require('./app-playerquestions.js');
 PlayerScore = require('./app-playerscore.js');
-
+AnswerScreen = require('./app-answerscreen.js');
+PlayerAnswer = require('./app-playeranswer.js');
+FinalState = require('./app-finalstate.js');
 var App = React.createClass({displayName: "App",
 
     getInitialState: function() {   
-        return { 
+        return {
             player1: 0,
             player2: 0,
             currPlayer: AppStore.currentPlayer(),
@@ -34882,7 +34929,9 @@ var App = React.createClass({displayName: "App",
             t_question_list: AppStore.makeTrueList(),
             f_question_list: AppStore.makeFalseList(),
             showResults: true,
-            flipscreen: false
+            flipscreen: false,
+            showAnswer: false,
+            answer: false
         }
     },
    
@@ -34892,18 +34941,34 @@ var App = React.createClass({displayName: "App",
         AppStore.addChangeListener('finalstate', this._finalstate);
         AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
         AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
+        AppStore.addChangeListener('show_answer', this._showAnswer);
+        AppStore.addChangeListener('update_question', this._hideAnswer);
     },
 
+    _showAnswer: function() {
+        this.setState({ showAnswer: true });
+    },
+    _hideAnswer: function() {
+        this.setState({ 
+            showAnswer: false,
+            answer: false
+        });
+    },
     _onChange1: function() {
-        this.setState({ player1: this.state.player1 + 1 });
+        this.setState({ 
+            player1: this.state.player1 + 1, 
+            answer: true
+        });
     },
-
     _onChange2: function() {
-        this.setState({ player2: this.state.player2 + 1 });
-    },
-
+        this.setState({ 
+            player2: this.state.player2 + 1,
+            answer: true
+        });
+    }, 
     _fliptoChange: function() {
         this.setState({
+            showAnswer: false,
             showResults: false,
             flipscreen: true,
             currPlayer: AppStore.switchPlayer(),
@@ -34923,11 +34988,13 @@ var App = React.createClass({displayName: "App",
     _finalstate: function() {
         this.setState({
             showResults: false,
+            showAnswer: false,
             body: FinalState
         });
     },
 
     render: function() {
+        console.log(AppStore.currentPlayer());
         return (
             React.createElement("div", null, 
                 React.createElement("div", null, 
@@ -34935,8 +35002,9 @@ var App = React.createClass({displayName: "App",
                     React.createElement("div", null, this.state.showResults ? React.createElement(PlayerScore, {player: 2, score: this.state.player2}) : null)
                 ), 
                 React.createElement("div", null, 
-                    React.createElement(this.state.body, {truth: this.state.t_question_list, lies: this.state.f_question_list})
-                )
+                    React.createElement(this.state.body, {truth: this.state.t_question_list, lies: this.state.f_question_list, stuff: AppStore.currentPlayer()})
+                ), 
+                React.createElement("div", null, this.state.showAnswer ? React.createElement(AnswerScreen, {stuff: this.state.answer}) : null)
             )
         )
     }
@@ -34944,7 +35012,7 @@ var App = React.createClass({displayName: "App",
 
 module.exports = App;
 
-},{"../actions/app-actions.js":164,"../stores/app-store.js":173,"./app-flipscreen.js":165,"./app-playerpick.js":167,"./app-playerquestions.js":168,"./app-playerscore.js":169,"react":163}],171:[function(require,module,exports){
+},{"../actions/app-actions.js":164,"../stores/app-store.js":175,"./app-answerscreen.js":165,"./app-finalstate.js":166,"./app-flipscreen.js":167,"./app-playeranswer.js":168,"./app-playerpick.js":169,"./app-playerquestions.js":170,"./app-playerscore.js":171,"react":163}],173:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 var assign = require('react/lib/Object.assign');
 
@@ -34962,13 +35030,13 @@ var AppDispatcher = assign(new Dispatcher(), {
 
 module.exports = AppDispatcher;
 
-},{"flux":3,"react/lib/Object.assign":29}],172:[function(require,module,exports){
-App = require('./components/app.js');
+},{"flux":3,"react/lib/Object.assign":29}],174:[function(require,module,exports){
+App = require('./components/app.js'); 
 ReactDOM = require('react-dom');
 
 ReactDOM.render(React.createElement(App, null), document.getElementById('main'));
 
-},{"./components/app.js":170,"react-dom":7}],173:[function(require,module,exports){
+},{"./components/app.js":172,"react-dom":7}],175:[function(require,module,exports){
 'use strict';
 
 var AppDispatcher = require('../dispatchers/app-dispatcher.js');
@@ -35096,16 +35164,13 @@ var AppStore = assign(EventEmitter.prototype, {
             case "CHANGE_SCORE":
                 if (payload.action.item.answer) {
                     player.addScore();
+                    if (player.score == 7) {
+                        AppStore.emitChange('finalstate');
+                        break;
+                    }
                     AppStore.emitChange('score_update' + player_id);
                 }
-                console.log(count);
-                if (count == 4) {
-                    count = 0;
-                    AppStore.emitChange('switch_to_flipscreen');
-                    break; 
-                }
-                count++;
-                AppStore.emitChange('update_question');
+                AppStore.emitChange('show_answer');
                 break;
 
             case "SWITCH_TO_FLIPSCREEN":
@@ -35117,6 +35182,16 @@ var AppStore = assign(EventEmitter.prototype, {
                 AppStore.emitChange('switch_from_flipscreen');
                 break;
 
+            case "HIDE_ANSWER":
+                if (count == 4) {
+                    count = 0;
+                    AppStore.emitChange('switch_to_flipscreen');
+                    break; 
+                }
+                AppStore.emitChange('update_question');
+                count++;
+                break;
+         
         return true; 
         }
     })
@@ -35124,4 +35199,4 @@ var AppStore = assign(EventEmitter.prototype, {
 
 module.exports = AppStore;
 
-},{"../dispatchers/app-dispatcher.js":171,"events":1,"lodash":6,"react/lib/Object.assign":29}]},{},[172]);
+},{"../dispatchers/app-dispatcher.js":173,"events":1,"lodash":6,"react/lib/Object.assign":29}]},{},[174]);
