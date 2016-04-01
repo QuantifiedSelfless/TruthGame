@@ -6,22 +6,31 @@ var EventEmitter = require('events').EventEmitter;
 
 var lodash = require('lodash');
 
+function create_object(arr) {
+    var temp = [];
+    for (var i = 1; i<arr.length; i++) {
+        temp.push({
+            'id': i,
+            'title': arr[i],
+            'answer': arr[0]
+        });
+    }
+    return temp;
+}
+
 class questions {
 
-    constructor(datablob, answer) {
-        this.total = datablob;
-        this.answer = answer;
+    constructor(t_statements, f_statements) {
+        this.true = create_object(t_statements);
+        this.false = create_object(f_statements);
+        this.total = this.true.concat(this.false);
         this.buttonList = [];
     }
- 
+
     create_button_list() {
         this.total = lodash.shuffle(this.total); 
         for (var i = 0; i<5; i++) {
-            this.buttonList.push({
-                'id': i + 1,
-                'title': this.total[i],
-                'answer': this.answer
-            });
+            this.buttonList.push(this.total[i]);
         }
         this.total = lodash.slice(this.total, 5);
         return this.buttonList;
@@ -32,17 +41,14 @@ class questions {
     }
 }
 
-     
-var false_statements = ['You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
-
+var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
 //replace with database call
-var player1_statements = ['You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
+var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
 
 var player2_statements = player1_statements;
 
-var app_questions = new questions(false_statements, false);
-var player1_questions = new questions(player1_statements, true);
-var player2_questions = new questions(player2_statements, true);
+var player1_questions = new questions(player1_statements, false_statements);
+var player2_questions = new questions(player2_statements, false_statements);
 
 //player object
 class player {
@@ -100,11 +106,7 @@ var AppStore = assign(EventEmitter.prototype, {
         player_2.flipActive();
         return player_1.isActive();
     },
-    makeFalseList: function() {
-        return app_questions.create_button_list();
-    },
-
-    makeTrueList: function() {
+    makeQuestionList: function() {
         return activeQuestions().create_button_list();
     },
     addPlayerScore: function() {

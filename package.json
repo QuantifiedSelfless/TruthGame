@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/QuantifiedSelfless/TruthGame#readme",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "httpster": "^1.0.3"
   },
   "dependencies": {
     "basscss": "^8.0.1",

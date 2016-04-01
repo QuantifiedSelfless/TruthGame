@@ -17,8 +17,7 @@ var App = React.createClass({
             player2: 0,
             currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
-            t_question_list: AppStore.makeTrueList(),
-            f_question_list: AppStore.makeFalseList(),
+            question_list: AppStore.makeQuestionList(),
             showResults: true,
             flipscreen: false,
             showAnswer: false,
@@ -71,7 +70,7 @@ var App = React.createClass({
         this.setState({
             flipscreen: false,
             body: PlayerQuestions,
-            t_question_list: AppStore.makeTrueList(),
+            t_question_list: AppStore.makeQuestionList(),
             showResults: true
         });
     },
@@ -85,7 +84,6 @@ var App = React.createClass({
     },
 
     render: function() {
-        console.log(AppStore.currentPlayer());
         return (
             <div>
                 <div>
@@ -93,7 +91,7 @@ var App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
                 <div>
-                    <this.state.body truth={this.state.t_question_list} lies={this.state.f_question_list} stuff={AppStore.currentPlayer()}/>
+                    <this.state.body questions={this.state.question_list} stuff={AppStore.currentPlayer()}/>
                 </div>
                 <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer}/> : null}</div>
             </div>
