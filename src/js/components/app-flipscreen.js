@@ -9,7 +9,7 @@ var FlipScreen = React.createClass({
 
     render: function() {
         return (
-            <div>
+            <div className="flip">
                 <img src="../src/js/img/arrows-26-128.png"></img>
                 <button onClick={this.handler}>Continue</button>
             </div>

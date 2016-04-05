@@ -9,7 +9,7 @@ var PlayerAnswer = React.createClass({
 
     render: function() {
         return (
-        	<div>
+        	<div className="buttons">
             	<button onClick={this.handler}>True</button>
             	<button onClick={this.handler}>False</button>
             </div>

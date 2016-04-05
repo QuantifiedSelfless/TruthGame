@@ -24,7 +24,7 @@ var AnswerScreen = React.createClass({
     },
     render: function() {
         return (
-            <h1>{this.props.stuff ? "Correct!" : "Incorrect!"}</h1>
+            <h1 className="feedback">{this.props.stuff ? "Correct!" : "Incorrect!"}</h1>
         )
     }
 });
