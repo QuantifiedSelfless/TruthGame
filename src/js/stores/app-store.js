@@ -28,6 +28,7 @@ class questions {
     }
 
     create_button_list() {
+        if (this.total.length < 5) return false
         this.total = lodash.shuffle(this.total); 
         for (var i = 0; i<5; i++) {
             this.buttonList.push(this.total[i]);
