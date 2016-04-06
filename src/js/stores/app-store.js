@@ -111,7 +111,7 @@ var AppStore = assign(EventEmitter.prototype, {
     },
     getGameWinner: function() {
         var temp;
-        if {(player_1.score == player_2.score) temp = 'Both Players tied!';}
+        if (player_1.score == player_2.score) {temp = 'Both Players tied!';}
         else {temp = (player_1.score > player_2.score) ? 'Player 1 was victorious' : 'Player 2 was victorious';}
         return temp;
     },
