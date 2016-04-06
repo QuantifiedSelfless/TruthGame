@@ -1,0 +1,33 @@
+.p1score{
+	position: fixed;
+	left: 20px;
+	bottom: 0;
+}
+
+.p2score{
+	position: fixed;
+	right: 20px;
+	bottom: 0;
+}
+
+.question{
+	text-align: center;
+	font-size: xx-large;
+}
+
+.buttons{
+	position: fixed;
+	bottom: 50px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.feedback{
+	text-align: center;
+}
+
+.flip{
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+}
