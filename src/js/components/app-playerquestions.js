@@ -26,7 +26,7 @@ var PlayerQuestions = React.createClass({
     render: function() {
         return  (
             <div>
-                <div className="question">
+                <div className="bubble">
                     <h3>{this.props.questions[this.state.question_state].title}</h3>
                 </div>
                 <div>
