@@ -20,6 +20,7 @@ var App = React.createClass({
             currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
             question_list: AppStore.makeQuestionList(),
+            showPlayer: true,
             showResults: true,
             flipscreen: false,
             showAnswer: false,
@@ -61,6 +62,7 @@ var App = React.createClass({
 
     _fliptoChange: function() {
         this.setState({
+            showPlayer: false,
             showAnswer: false,
             showResults: false,
             flipscreen: true,
@@ -71,6 +73,7 @@ var App = React.createClass({
 
     _flipfromChange: function() {
         this.setState({
+            showPlayer: true,
             flipscreen: false,
             body: PlayerQuestions,
             t_question_list: AppStore.makeQuestionList(),
@@ -80,6 +83,7 @@ var App = React.createClass({
 
     _finalState: function() {
         this.setState({
+            showPlayer: false,
             showResults: false,
             showAnswer: false,
             score: AppStore.getGameWinner(),
@@ -97,6 +101,7 @@ var App = React.createClass({
                 <div>
                     <this.state.body questions={this.state.question_list} score={this.state.score} />
                 </div>
+                <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer}/> : null}</div>
                 <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer}/> : null}</div>
             </div>
         )
