@@ -31,6 +31,8 @@ var PlayerQuestions = React.createClass({
                 </div>
                 <div>
                     <PlayerAnswer item={this.props.questions[this.state.question_state]} />
+				
+					<img className="tree" src="../src/js/img/Tree.png" alt="Design Craft Tree Logo"></img>
                 </div>
             </div>
         )

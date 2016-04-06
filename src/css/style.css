@@ -1,47 +1,70 @@
+body{
+	background-color: #fff; 
+	background-image: 
+	linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+	linear-gradient(#eee .1em, transparent .1em);
+	background-size: 100% 1.2em;
+}
+
+img{
+    max-width: 100%;
+	height: auto;
+}
+
 .p1score{
 	position: fixed;
 	left: 20px;
 	bottom: 0;
+	color: #1b2323;
 }
 
 .p2score{
 	position: fixed;
 	right: 20px;
 	bottom: 0;
-}
-
-.question{
-	text-align: center;
-	font-size: xx-large;
+	color: #1b2323;
 }
 
 .buttons{
 	position: fixed;
-	bottom: 50px;
+	bottom: 2%;
 	left: 50%;
 	transform: translateX(-50%);
 }
 
 .feedback{
 	text-align: center;
+	color: #1b2323;
+}
+
+.tree{
+	position: fixed;
+	left: 50%;
+	bottom: 10%;
+	transform: translateX(-50%);
+	color: #1b2323;
 }
 
 .flip{
 	position: fixed;
 	left: 50%;
 	transform: translateX(-50%);
+	color: #1b2323;
 }
 
 .victory{
 	text-align: center;
 	font-size: xx-large;
+	color: #1b2323;
 }
 
 .bubble {
+	text-align: center;
+	font-size: xx-large;
 	position: relative;
 	padding: 15px;
 	margin: 1em 0 3em;
-	color: #fff;
+	color: #1b2323;
 	border-radius: 10px;
 	background:-webkit-gradient(linear, 0 0, 0 100%, from(#8bc4b6), to(#789e9d));
 	background:-moz-linear-gradient(#8bc4b6, #789e9d);
@@ -57,6 +80,7 @@
 	position: absolute;
 	bottom: -15px;
 	left: 50%;
+	transform: translateX(-50%);
 	width: 0;
 	border-width: 15px 15px 0;
 	border-style: solid;
