@@ -14,6 +14,10 @@ var PlayerAnswer = React.createClass({
     componentWillMount: function() {
         AppStore.addChangeListener('show_answer', this._onChange1);
         AppStore.addChangeListener('update_question', this._onChange2);
+    },
+    componentWillUnmount: function() {
+        AppStore.removeChangeListener('show_answer', this._onChange1);
+        AppStore.removeChangeListener('update_question', this._onChange2);
     }, 
     _onChange1: function() {
         this.setState({ click: null });

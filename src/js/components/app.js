@@ -9,10 +9,12 @@ PlayerScore = require('./app-playerscore.js');
 AnswerScreen = require('./app-answerscreen.js');
 PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
+
 var App = React.createClass({
 
     getInitialState: function() {   
         return {
+            score: 0,
             player1: 0,
             player2: 0,
             currPlayer: AppStore.currentPlayer(),
@@ -28,7 +30,7 @@ var App = React.createClass({
     componentWillMount: function() {
         AppStore.addChangeListener('score_update1', this._onChange1);
         AppStore.addChangeListener('score_update2', this._onChange2);
-        AppStore.addChangeListener('finalstate', this._finalstate);
+        AppStore.addChangeListener('final_state', this._finalState);
         AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
         AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
         AppStore.addChangeListener('show_answer', this._showAnswer);
@@ -56,6 +58,7 @@ var App = React.createClass({
             answer: true
         });
     }, 
+
     _fliptoChange: function() {
         this.setState({
             showAnswer: false,
@@ -75,15 +78,16 @@ var App = React.createClass({
         });
     },
 
-    _finalstate: function() {
+    _finalState: function() {
         this.setState({
             showResults: false,
             showAnswer: false,
+            score: AppStore.getGameWinner(),
             body: FinalState
         });
     },
 
-    render: function() {
+   render: function() {
         return (
             <div>
                 <div>
@@ -91,7 +95,7 @@ var App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
                 <div>
-                    <this.state.body questions={this.state.question_list} stuff={AppStore.currentPlayer()}/>
+                    <this.state.body questions={this.state.question_list} score={this.state.score} />
                 </div>
                 <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer}/> : null}</div>
             </div>

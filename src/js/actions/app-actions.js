@@ -15,16 +15,20 @@ var AppActions = {
 
     flipToScreen: function() {
         AppDispatcher.handleViewAction({
-            actionType: "SWITCH_TO_FLIPSCREEN",
+            actionType: "SWITCH_TO_FLIPSCREEN"
         })
     },
 
     flipFromScreen: function() {
         AppDispatcher.handleViewAction({
-            actionType: "SWITCH_FROM_FLIPSCREEN",
+            actionType: "SWITCH_FROM_FLIPSCREEN"
         })
     },
-
+    outOfQuestions: function() {
+        AppDispatcher.handleViewAction({
+            actionType: "OUT_OF_QUESTIONS"
+        })
+    },
 }
 
 module.exports = AppActions;
