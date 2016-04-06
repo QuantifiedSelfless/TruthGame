@@ -7,10 +7,17 @@ var FlipScreen = React.createClass({
     },
     render: function() {
         return (
+			<div>
             <div className="flip">
-                <img src="../src/js/img/arrows-26-128.png"></img>
                 <button onClick={this.forward}>Continue</button>
+ 
             </div>
+			<div>
+				<h3 className="bubble">{!this.props.stuff ? "Player 2, it's your turn. Press a button to continue." : "Player 1 ,it's your turn. Press a button to continue."}</h3>
+				<img className="tree" src="../src/js/img/Tree.png" alt="Design Craft Tree Logo"></img>
+				
+			</div>
+			</div>
         )
     }
 });

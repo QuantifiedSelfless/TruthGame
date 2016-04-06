@@ -1,3 +1,8 @@
+/*TODO: 
+Add styling around acores and now playing
+change font
+*/
+
 body{
 	background-color: #fff; 
 	background-image: 
@@ -9,8 +14,17 @@ body{
 img{
     max-width: 100%;
 	height: auto;
+	z-index: -1;
 }
-/**/
+
+.nowplaying{
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	color: #1b2323;
+}
+
 .p1score{
 	position: fixed;
 	left: 20px;
@@ -27,27 +41,35 @@ img{
 
 .buttons{
 	position: fixed;
-	bottom: 2%;
+	bottom: 50%;
 	left: 50%;
 	transform: translateX(-50%);
 }
 
 .feedback{
-	text-align: center;
+	position: fixed;
+	left: 50%;
+	bottom: 8%;
+	transform: translateX(-50%);
+	max-width: 22%;
 	color: #1b2323;
 }
 
 .tree{
 	position: fixed;
 	left: 50%;
-	bottom: 10%;
+	bottom: 20%;
 	transform: translateX(-50%);
+	max-width: 22%;
 	color: #1b2323;
 }
 
 .flip{
 	position: fixed;
 	left: 50%;
+	top: 50%;
+	font-size: xx-large;
+	text-align: center;
 	transform: translateX(-50%);
 	color: #1b2323;
 }
@@ -62,6 +84,8 @@ img{
 	text-align: center;
 	font-size: xx-large;
 	position: relative;
+	height: 125px;
+	vertical-align: middle;
 	padding: 15px;
 	margin: 1em 0 3em;
 	color: #1b2323;
