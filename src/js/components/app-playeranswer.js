@@ -9,9 +9,16 @@ var PlayerAnswer = React.createClass({
         }
     },
     handler: function() {
-        AppActions.changeScore(this.props.item);
+        console.log('asdlkfjas;dlfkjasd;lfkj');
+    },
+    componentDidMount: function() {
+        var socket = io.connect('http://localhost:3000/dist')
     },
     componentWillMount: function() {
+        socket.on('button1', this.handler); 
+        socket.on('button2', this.handler);
+        socket.on('button3', this.handler);
+        socket.on('button4', this.handler);
         AppStore.addChangeListener('show_answer', this._onChange1);
         AppStore.addChangeListener('update_question', this._onChange2);
     },
