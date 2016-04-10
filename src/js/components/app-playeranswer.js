@@ -12,7 +12,7 @@ var PlayerAnswer = React.createClass({
         console.log('asdlkfjas;dlfkjasd;lfkj');
     },
     componentDidMount: function() {
-        var socket = io.connect('http://localhost:3000/dist')
+        var socket = io.connect('http://localhost:3000')
     },
     componentWillMount: function() {
         socket.on('button1', this.handler); 
