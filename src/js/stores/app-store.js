@@ -107,7 +107,7 @@ var AppStore = assign(EventEmitter.prototype, {
     switchPlayer: function() {
         player_1.flipActive();
         player_2.flipActive();
-        return player_1.isActive();
+        return player_2.isActive();
     },
     getGameWinner: function() {
         var temp;

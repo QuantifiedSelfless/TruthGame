@@ -10,6 +10,8 @@ AnswerScreen = require('./app-answerscreen.js');
 PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
 
+var io = require('socket.io-client');
+var socket = io.connect('http://localhost:3000');
 var App = React.createClass({
 
     getInitialState: function() {   
@@ -22,13 +24,12 @@ var App = React.createClass({
             question_list: AppStore.makeQuestionList(),
             showPlayer: true,
             showResults: true,
-            flipscreen: false,
             showAnswer: false,
             answer: false
         }
     },
    
-    componentWillMount: function() {
+    componentWillMount: function() { 
         AppStore.addChangeListener('score_update1', this._onChange1);
         AppStore.addChangeListener('score_update2', this._onChange2);
         AppStore.addChangeListener('final_state', this._finalState);
@@ -65,7 +66,6 @@ var App = React.createClass({
             showPlayer: false,
             showAnswer: false,
             showResults: false,
-            flipscreen: true,
             currPlayer: AppStore.switchPlayer(),
             body: FlipScreen,
         });
@@ -74,7 +74,6 @@ var App = React.createClass({
     _flipfromChange: function() {
         this.setState({
             showPlayer: true,
-            flipscreen: false,
             body: PlayerQuestions,
             t_question_list: AppStore.makeQuestionList(),
             showResults: true
@@ -99,7 +98,7 @@ var App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
                 <div>
-                    <this.state.body questions={this.state.question_list} score={this.state.score} />
+                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} socket={socket} />
                 </div>
                 <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer}/> : null}</div>
                 <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer}/> : null}</div>

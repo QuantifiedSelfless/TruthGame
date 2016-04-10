@@ -8,11 +8,14 @@ gulp.task('browserify', function() {
         .transform('reactify')
         .bundle()
         .pipe(source('main.js'))
-        .pipe(gulp.dest('dist/js'));
+        .pipe(gulp.dest('./dist/js'));
 });
 
 gulp.task('copy', function() {
-    gulp.src('src/index.html')
+     gulp.src('src/index.html')
+        .pipe(gulp.dest('dist'));
+
+    gulp.src('node_modules/socket.io/')
         .pipe(gulp.dest('dist'));
 	
     gulp.src('src/css/style.css')
@@ -21,7 +24,7 @@ gulp.task('copy', function() {
     gulp.src('node_modules/basscss/css/basscss.css')
 	.pipe(gulp.dest('dist'));
 
-    gulp.src('src/img/Tree.png')
+    gulp.src('src/js/img/Tree.png')
 	.pipe(gulp.dest('dist'));
 
     gulp.src('src/assets/**/*.*')
