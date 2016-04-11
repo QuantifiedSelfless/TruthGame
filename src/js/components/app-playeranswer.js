@@ -11,6 +11,7 @@ var PlayerAnswer = React.createClass({
     },
      
     handler: function(button_boolean) {
+        console.log('alkasdjfla');
         AppActions.changeScore({answer: button_boolean})
     },
 
@@ -25,6 +26,7 @@ var PlayerAnswer = React.createClass({
     },
 
     componentDidMount: function() {
+        console.log('mounted');
         if (!this.props.player) {
             this.props.socket.on('button1', this.state.true_press); 
             this.props.socket.on('button2', this.state.false_press);
@@ -34,12 +36,14 @@ var PlayerAnswer = React.createClass({
             this.props.socket.on('button4', this.state.false_press);
         }
     },
+
     componentWillMount: function() {
         AppStore.addChangeListener('show_answer', this._onChange1);
         AppStore.addChangeListener('update_question', this._onChange2);
     },
 
     componentWillUnmount: function() {
+        console.log('removed playeranswer');
         this.props.socket.removeListener('button1', this.state.true_press); 
         this.props.socket.removeListener('button2', this.state.false_press);
         this.props.socket.removeListener('button3', this.state.true_press); 

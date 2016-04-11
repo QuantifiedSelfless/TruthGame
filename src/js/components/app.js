@@ -9,13 +9,13 @@ PlayerScore = require('./app-playerscore.js');
 AnswerScreen = require('./app-answerscreen.js');
 PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
+io = require('socket.io-client');
 
-var io = require('socket.io-client');
-var socket = io.connect('http://localhost:3000');
 var App = React.createClass({
 
     getInitialState: function() {   
         return {
+            socket: io.connect('http://localhost:3000'),
             score: 0,
             player1: 0,
             player2: 0,
@@ -98,10 +98,14 @@ var App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
                 <div>
-                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} socket={socket} />
+                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} socket={this.state.socket} />
                 </div>
-                <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer}/> : null}</div>
-                <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer}/> : null}</div>
+                if(this.state.showPlayer) {
+                    <div>
+                        <div><PlayerPick stuff={this.state.currPlayer} /></div>
+                        <div><AnswerScreen stuff={this.state.answer} /></div>
+                    </div>
+                }
             </div>
         )
     }
