@@ -95,9 +95,14 @@ var App = React.createClass({
         theDiv = (
                     <div>
                         <div><PlayerPick stuff={this.state.currPlayer} /></div>
+                    </div>);
+        } else if (this.state.showPlayer && this.state.showAnswer) {
+         theDiv = (          
+                    <div>
+                        <div><PlayerPick stuff={this.state.currPlayer} /></div>
                         <div><AnswerScreen stuff={this.state.answer} /></div>
                     </div>);
-        } else {
+        else {
             theDiv = null
         }
 
