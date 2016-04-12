@@ -1,23 +1,20 @@
 React = require('react');
 AppActions = require('../actions/app-actions.js');
-
+io = require('socket.io-client');
 var FlipScreen = React.createClass({
     componentDidMount: function() {
+        var socket = io.connect('http://localhost:3000');
         if (!this.props.player) {
-            this.props.socket.on('button1', this.handler); 
-            this.props.socket.on('button2', this.handler);
+            socket.on('button1', this.handler); 
+            socket.on('button2', this.handler);
         } 
         else {
-            this.props.socket.on('button3', this.handler); 
-            this.props.socket.on('button4', this.handler);
+            socket.on('button3', this.handler); 
+            socket.on('button4', this.handler);
         } 
     },
     componentWillUnmount: function() {
-        console.log('removed flipscreen');
-        this.props.socket.removeListener('button1', this.handler); 
-        this.props.socket.removeListener('button2', this.handler);
-        this.props.socket.removeListener('button3', this.handler); 
-        this.props.socket.removeListener('button4', this.handler);
+        socket.close()
     },  
     handler: function() {
         AppActions.flipFromScreen();

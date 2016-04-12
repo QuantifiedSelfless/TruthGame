@@ -15,7 +15,6 @@ var App = React.createClass({
 
     getInitialState: function() {   
         return {
-            socket: io.connect('http://localhost:3000'),
             score: 0,
             player1: 0,
             player2: 0,
@@ -98,7 +97,7 @@ var App = React.createClass({
                     <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
                 <div>
-                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} socket={this.state.socket} />
+                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} />
                 </div>
                 <div>
                     <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer} /> : null}</div>

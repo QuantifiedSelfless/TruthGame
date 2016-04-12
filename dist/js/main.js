@@ -42031,24 +42031,21 @@ module.exports = FinalState;
 },{"react":195}],212:[function(require,module,exports){
 React = require('react');
 AppActions = require('../actions/app-actions.js');
-
+io = require('socket.io-client');
 var FlipScreen = React.createClass({displayName: "FlipScreen",
     componentDidMount: function() {
+        var socket = io.connect('http://localhost:3000');
         if (!this.props.player) {
-            this.props.socket.on('button1', this.handler); 
-            this.props.socket.on('button2', this.handler);
+            socket.on('button1', this.handler); 
+            socket.on('button2', this.handler);
         } 
         else {
-            this.props.socket.on('button3', this.handler); 
-            this.props.socket.on('button4', this.handler);
+            socket.on('button3', this.handler); 
+            socket.on('button4', this.handler);
         } 
     },
     componentWillUnmount: function() {
-        console.log('removed flipscreen');
-        this.props.socket.removeListener('button1', this.handler); 
-        this.props.socket.removeListener('button2', this.handler);
-        this.props.socket.removeListener('button3', this.handler); 
-        this.props.socket.removeListener('button4', this.handler);
+        socket.close()
     },  
     handler: function() {
         AppActions.flipFromScreen();
@@ -42068,11 +42065,11 @@ var FlipScreen = React.createClass({displayName: "FlipScreen",
 
 module.exports = FlipScreen;
 
-},{"../actions/app-actions.js":209,"react":195}],213:[function(require,module,exports){
+},{"../actions/app-actions.js":209,"react":195,"socket.io-client":196}],213:[function(require,module,exports){
 React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
-
+io = require('socket.io-client');
 var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
     getInitialState: function() {
         return {
@@ -42097,14 +42094,14 @@ var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
     },
 
     componentDidMount: function() {
-        console.log('mounted');
+        var socket = io.connect('http://localhost:3000'); 
         if (!this.props.player) {
-            this.props.socket.on('button1', this.state.true_press); 
-            this.props.socket.on('button2', this.state.false_press);
+            socket.on('button1', this.state.true_press); 
+            socket.on('button2', this.state.false_press);
         }
         else {
-            this.props.socket.on('button3', this.state.true_press);
-            this.props.socket.on('button4', this.state.false_press);
+            socket.on('button3', this.state.true_press);
+            socket.on('button4', this.state.false_press);
         }
     },
 
@@ -42115,10 +42112,7 @@ var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
 
     componentWillUnmount: function() {
         console.log('removed playeranswer');
-        this.props.socket.removeListener('button1', this.state.true_press); 
-        this.props.socket.removeListener('button2', this.state.false_press);
-        this.props.socket.removeListener('button3', this.state.true_press); 
-        this.props.socket.removeListener('button4', this.state.false_press);
+        socket.close();
         AppStore.removeChangeListener('show_answer', this._onChange1);
         AppStore.removeChangeListener('update_question', this._onChange2);
     }, 
@@ -42145,7 +42139,7 @@ var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
 
 module.exports = PlayerAnswer; 
 
-},{"../actions/app-actions.js":209,"../stores/app-store.js":220,"react":195}],214:[function(require,module,exports){
+},{"../actions/app-actions.js":209,"../stores/app-store.js":220,"react":195,"socket.io-client":196}],214:[function(require,module,exports){
 React = require('react');
 
 var PlayerPick = React.createClass({displayName: "PlayerPick", 
@@ -42242,7 +42236,6 @@ var App = React.createClass({displayName: "App",
 
     getInitialState: function() {   
         return {
-            socket: io.connect('http://localhost:3000'),
             score: 0,
             player1: 0,
             player2: 0,
@@ -42325,7 +42318,7 @@ var App = React.createClass({displayName: "App",
                     React.createElement("div", null, this.state.showResults ? React.createElement(PlayerScore, {player: 2, score: this.state.player2}) : null)
                 ), 
                 React.createElement("div", null, 
-                    React.createElement(this.state.body, {player: this.state.currPlayer, questions: this.state.question_list, score: this.state.score, socket: this.state.socket})
+                    React.createElement(this.state.body, {player: this.state.currPlayer, questions: this.state.question_list, score: this.state.score})
                 ), 
                 React.createElement("div", null, 
                     React.createElement("div", null, this.state.showPlayer ? React.createElement(PlayerPick, {stuff: this.state.currPlayer}) : null), 

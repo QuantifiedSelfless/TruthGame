@@ -1,7 +1,7 @@
 React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
-
+io = require('socket.io-client');
 var PlayerAnswer = React.createClass({
     getInitialState: function() {
         return {
@@ -26,14 +26,14 @@ var PlayerAnswer = React.createClass({
     },
 
     componentDidMount: function() {
-        console.log('mounted');
+        var socket = io.connect('http://localhost:3000'); 
         if (!this.props.player) {
-            this.props.socket.on('button1', this.state.true_press); 
-            this.props.socket.on('button2', this.state.false_press);
+            socket.on('button1', this.state.true_press); 
+            socket.on('button2', this.state.false_press);
         }
         else {
-            this.props.socket.on('button3', this.state.true_press);
-            this.props.socket.on('button4', this.state.false_press);
+            socket.on('button3', this.state.true_press);
+            socket.on('button4', this.state.false_press);
         }
     },
 
@@ -44,10 +44,7 @@ var PlayerAnswer = React.createClass({
 
     componentWillUnmount: function() {
         console.log('removed playeranswer');
-        this.props.socket.removeListener('button1', this.state.true_press); 
-        this.props.socket.removeListener('button2', this.state.false_press);
-        this.props.socket.removeListener('button3', this.state.true_press); 
-        this.props.socket.removeListener('button4', this.state.false_press);
+        socket.close();
         AppStore.removeChangeListener('show_answer', this._onChange1);
         AppStore.removeChangeListener('update_question', this._onChange2);
     }, 
