@@ -2,6 +2,7 @@ React = require('react');
 AppStore = require('../stores/app-store.js');
 AppActions = require('../actions/app-actions.js');
 io = require('socket.io-client');
+var socket;
 var PlayerAnswer = React.createClass({
     getInitialState: function() {
         return {
@@ -11,7 +12,6 @@ var PlayerAnswer = React.createClass({
     },
      
     handler: function(button_boolean) {
-        console.log('alkasdjfla');
         AppActions.changeScore({answer: button_boolean})
     },
 
@@ -26,7 +26,7 @@ var PlayerAnswer = React.createClass({
     },
 
     componentDidMount: function() {
-        var socket = io.connect('http://localhost:3000'); 
+        socket = io.connect('http://localhost:3000'); 
         if (!this.props.player) {
             socket.on('button1', this.state.true_press); 
             socket.on('button2', this.state.false_press);
@@ -43,7 +43,6 @@ var PlayerAnswer = React.createClass({
     },
 
     componentWillUnmount: function() {
-        console.log('removed playeranswer');
         socket.close();
         AppStore.removeChangeListener('show_answer', this._onChange1);
         AppStore.removeChangeListener('update_question', this._onChange2);

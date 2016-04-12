@@ -1,9 +1,10 @@
 React = require('react');
 AppActions = require('../actions/app-actions.js');
 io = require('socket.io-client');
+var socket;
 var FlipScreen = React.createClass({
     componentDidMount: function() {
-        var socket = io.connect('http://localhost:3000');
+        socket = io.connect('http://localhost:3000');
         if (!this.props.player) {
             socket.on('button1', this.handler); 
             socket.on('button2', this.handler);
@@ -24,7 +25,7 @@ var FlipScreen = React.createClass({
         return (
 	    <div>
 	        <div>
-	            <h3 className="bubble">{!this.props.player ? "Player 2, it's your turn. Press a button to continue." : "Player 1 ,it's your turn. Press a button to continue."}</h3>
+	            <h3 className="bubble">{!this.props.player ? "Player 1, it's your turn. Press a button to continue." : "Player 2, it's your turn. Press a button to continue."}</h3>
 	            <img className="tree" src="Tree.png" alt="Design Craft Tree Logo"></img>
 	        </div>
 	    </div>
