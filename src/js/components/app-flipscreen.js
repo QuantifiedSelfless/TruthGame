@@ -12,7 +12,7 @@ var FlipScreen = React.createClass({
             this.props.socket.on('button4', this.handler);
         } 
     },
-    componentDidUnmount: function() {
+    componentWillUnmount: function() {
         console.log('removed flipscreen');
         this.props.socket.removeListener('button1', this.handler); 
         this.props.socket.removeListener('button2', this.handler);

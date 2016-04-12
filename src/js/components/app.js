@@ -91,21 +91,6 @@ var App = React.createClass({
     },
 
    render: function() {
-        if(this.state.ShowPlayer){
-        theDiv = (
-                    <div>
-                        <div><PlayerPick stuff={this.state.currPlayer} /></div>
-                    </div>);
-        } else if (this.state.showPlayer && this.state.showAnswer) {
-         theDiv = (          
-                    <div>
-                        <div><PlayerPick stuff={this.state.currPlayer} /></div>
-                        <div><AnswerScreen stuff={this.state.answer} /></div>
-                    </div>);
-        else {
-            theDiv = null
-        }
-
         return (
             <div>
                 <div>
@@ -115,7 +100,10 @@ var App = React.createClass({
                 <div>
                     <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} socket={this.state.socket} />
                 </div>
-                {theDiv}
+                <div>
+                    <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer} /> : null}</div>
+                    <div>{this.state.showAnswer ? <AnswerScreen stuff={this.state.answer} /> : null }</div>
+                </div>
             </div>
         )
     }
