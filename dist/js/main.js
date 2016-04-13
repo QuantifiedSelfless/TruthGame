@@ -42232,6 +42232,13 @@ PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
 io = require('socket.io-client');
 
+var socket2 = io.connect('http://localhost:3000')
+
+socket2.on('rfid', function(data){
+    console.log('hello');
+    setTimeout(function() { window.location = "http://localhost:8000"}, 2000)
+})
+
 var App = React.createClass({displayName: "App",
 
     getInitialState: function() {   
