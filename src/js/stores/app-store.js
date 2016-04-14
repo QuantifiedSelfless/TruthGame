@@ -42,6 +42,19 @@ class questions {
     }
 }
 
+//Leif - this is sample AJAX call. Need to genericize the userid.
+$.ajax({
+    type:"GET",
+    url:"http://quantifiedselfbackend.local:6060/truth_processor/truth?userid=b9bef55d-e1c2-418b-979d-62762902ee38",
+    success: function(data){
+        console.log(data);
+        //Where you want to load Player object.
+    },
+    error: function(data){
+        console.log(data);
+    }
+});
+
 var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
 //'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
 //replace with database call
