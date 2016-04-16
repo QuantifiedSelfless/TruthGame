@@ -63,7 +63,7 @@ var PlayerAnswer = React.createClass({
     },
 
     render: function() {
-        return false
+        return true; 
     }
     
 });

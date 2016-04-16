@@ -28,21 +28,24 @@ var App = React.createClass({
             currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
             question_list: AppStore.makeQuestionList(),
-            showPlayer: true,
+            showPlayer: AppStore.gameType(),
             showResults: true,
             showAnswer: false,
-            answer: false
+            answer: false,
+            gameType: AppStore.gameType()
         }
     },
    
-    componentWillMount: function() { 
+    componentWillMount: function() {  
         AppStore.addChangeListener('score_update1', this._onChange1);
-        AppStore.addChangeListener('score_update2', this._onChange2);
         AppStore.addChangeListener('final_state', this._finalState);
-        AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
-        AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
         AppStore.addChangeListener('show_answer', this._showAnswer);
         AppStore.addChangeListener('update_question', this._hideAnswer);
+        if (this.state.gameType) {
+            AppStore.addChangeListener('score_update2', this._onChange2);
+            AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
+            AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
+        }
     },
 
     _showAnswer: function() {
@@ -91,18 +94,26 @@ var App = React.createClass({
             showPlayer: false,
             showResults: false,
             showAnswer: false,
-            score: AppStore.getGameWinner(),
+            score: AppStore.getGameWinner(this.state.gameType),
             body: FinalState
         });
     },
 
-   render: function() {
-        return (
+   render: function() { 
+        var temp1 = (
             <div>
+                <div>{this.state.showResults ? <PlayerScore player={1} score={this.state.player1}/> : null}</div>
+                <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
+            </div>
+        );
+        var temp2 = ( 
                 <div>
                     <div>{this.state.showResults ? <PlayerScore player={1} score={this.state.player1}/> : null}</div>
-                    <div>{this.state.showResults ? <PlayerScore player={2} score={this.state.player2}/> : null}</div>
                 </div>
+        );
+        return (
+            <div>
+                {!this.state.gameType ? temp1 : temp2}
                 <div>
                     <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} />
                 </div>
