@@ -56,7 +56,6 @@ var player2_statements = player1_statements;
 var player1_questions = new questions(player1_statements, false_statements);
 var player2_questions = new questions(player2_statements, false_statements);
 
->>>>>>> 414c0ea098c3fa0cb60b2811ca34f4e6e158327c
 //player object
 class player {
 

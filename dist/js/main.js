@@ -42421,6 +42421,17 @@ class questions {
     }
 }
 
+var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
+//'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
+//replace with database call
+var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
+//'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
+
+var player2_statements = player1_statements;
+
+var player1_questions = new questions(player1_statements, false_statements);
+var player2_questions = new questions(player2_statements, false_statements);
+
 //player object
 class player {
 
