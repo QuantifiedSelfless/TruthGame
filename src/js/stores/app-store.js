@@ -5,27 +5,46 @@ var assign = require('react/lib/Object.assign');
 var EventEmitter = require('events').EventEmitter;
 var AppActions = require('../actions/app-actions.js');
 var lodash = require('lodash');
+var $ = require('jquery');
 
 var one_player_game = true;
 var count = 0;
-var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
-//'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
-//replace with database call
-var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
+var player1_statements;
+var player2_statements;
+var second_ajax_call = false;
+// = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
 //'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
-
 var player_1;
 var player_2;
 var player1_questions;
 var player2_questions;
+var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
+//'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
+//replace with database call
+//var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
+//'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
+
+
+function create_object(arr) {
+    var temp = [];
+    for (var i = 1; i<arr.length; i++) {
+        temp.push({
+            'id': i,
+            'title': arr[i],
+            'answer': arr[0]
+        });
+    }
+    return temp;
+}
+
 
 class questions {
 
-    constructor(t_statements, f_statements, one_player_game=false) {
+    constructor(t_statements, f_statements, number_of_players) {
         this.true = create_object(t_statements);
         this.false = create_object(f_statements);
         this.total = this.true.concat(this.false);
-        this.one_player_game = one_player_game;
+        this.one_player_game = number_of_players;
         this.buttonList = [];
     }
 
@@ -45,25 +64,14 @@ class questions {
     }
 }
 
-var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
-//'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
-//replace with database call
-var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
-//'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
-
-var player2_statements = player1_statements;
-
-var player1_questions = new questions(player1_statements, false_statements);
-var player2_questions = new questions(player2_statements, false_statements);
-
 //player object
 class player {
 
-    constructor(id, active, one_player_game=false) {
+    constructor(id, active, number_of_players) {
         this.id = 'player' + id;
         this.active = active;
         this.score = 0;
-        this.one_player_game = one_player_game;
+        this.one_player_game = number_of_players;
     }
 
     isActive() {
@@ -82,44 +90,96 @@ class player {
     }
 }
 
-function create_object(arr) {
-    var temp = [];
-    for (var i = 1; i<arr.length; i++) {
-        temp.push({
-            'id': i,
-            'title': arr[i],
-            'answer': arr[0]
-        });
+function getURLParams() {
+    var re = /[?&]([^&=]+)(?:[&=])([^&=]+)/gim;
+    var m;
+    var v={};
+    while ((m = re.exec(location.search)) != null) {
+        if (m.index === re.lastIndex) {
+        re.lastIndex++;
     }
-    return temp;
-}
+    v[m[1]]=m[2];
+    }
+    return v;
+};
+
+function startGame(players) {
+ 
+    if (one_player_game) {
+        player_1 = new player(1, true, true);
+        player1_questions = new questions(players[0]['true'], players[0]['false'], true); 
+    }
+
+    else {
+        player_1 = new player(1, true, false);
+        player_2 = new player(2, false, false);
+        player1_questions = new questions(players[0]['true'], players[0]['false'], false);
+        player2_questions = new questions(players[1]['true'], players[1]['false'], false);
+    }
+};
+
+
+
+function make_AJAX_call(player_rfid, tryCount, retryLimit){
+    $.ajax({
+        type: 'GET',
+        url: "http://quantifiedselfbackend.local:6060/truth_processor/truth",
+        data: player_rfid,
+        success: function(resp) {
+            console.log(resp);
+            //Whatever logic for a true
+            return resp['data'];
+        },
+        error: function(resp) {
+            console.log("Error: Ajax call failed");
+            tryCount++;
+            if (tryCount >= retryLimit){
+                //Do whatever for an error
+                window.location = "www.google.com";
+            }
+            else { //Try again with exponential backoff.
+                setTimeout(function(){ 
+                    return make_AJAX_call(player_rfid, tryCount, retryLimit);
+                }, Math.pow(2, tryCount) * 1000);
+                return false;
+            }
+        }
+    });
+    return false;
+};
 
 function activeQuestions() {
     var questions = player_1.isActive() ? player1_questions : player2_questions;
     return questions;
-}
+};
    
 function activePlayer() {
     var player = player_1.isActive() ? player_1 : player_2;
     return player;
-} 
+};
 
-function startGame(one_player_game) {
-    var player2_statements = player1_statements;
-    if (one_player_game) {
-        player_1 = new player(1, true, one_player_game);
-        player1_questions = new questions(player1_statements, false_statements, one_player_game); 
+function prepGame() {
+    //get url
+    var player_ids;
+    var keys;
+    var player2 = false;
+    var data = [];
+    var players = [];
+    player_ids = getURLParams();
+    keys = Object.keys(player_ids) 
+    
+    if (keys.length == 2) {
+        one_player_game = false;
     }
 
-    else {
-        player_1 = new player(1, true);
-        player_2 = new player(2, false);
-        player1_questions = new questions(player1_statements, false_statements);
-        player2_questions = new questions(player2_statements, false_statements);
+    for (var p in player_ids) {
+        players.push(make_AJAX_call({rfid: player_ids[p]}, 0, 3)); 
     }
-}
 
-startGame(one_player_game);
+    return players
+};       
+ 
+prepGame();
 
 var AppStore = assign(EventEmitter.prototype, {
     emitChange: function(change) {
@@ -169,7 +229,7 @@ var AppStore = assign(EventEmitter.prototype, {
         return player_2.score;
     },
 
-    getGameType: function(gameType, currCount, gameCount, finalState=false) {
+    getGameType: function(gameType, currCount, gameCount, finalState) {
         var temp = (currCount == gameCount);
         if (gameType && temp) {
             AppStore.emitChange('final_state');
@@ -220,8 +280,8 @@ var AppStore = assign(EventEmitter.prototype, {
                 break;
 
             case "HIDE_ANSWER": 
-                if (one_player_game) AppStore.getGameType(true, count, 9);
-                else AppStore.getGameType(false, count, 4, finalState=final_state());
+                if (one_player_game) AppStore.getGameType(true, count, 9, false);
+                else AppStore.getGameType(false, count, 4, getFinalState());
                 break; 
 
             case "OUT_OF_QUESTIONS":
