@@ -11,6 +11,7 @@ PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
 io = require('socket.io-client');
 
+var gameStart = false;
 var socket2 = io.connect('http://localhost:3000')
 
 socket2.on('rfid', function(data){
@@ -21,6 +22,7 @@ socket2.on('rfid', function(data){
 var App = React.createClass({
 
     getInitialState: function() {   
+        if (!gameStart) {AppActions.startGame(this.props.game_players)}
         return {
             score: 0,
             player1: 0,
@@ -28,7 +30,7 @@ var App = React.createClass({
             currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
             question_list: AppStore.makeQuestionList(),
-            showPlayer: AppStore.gameType(),
+            showPlayer: true,
             showResults: true,
             showAnswer: false,
             answer: false,

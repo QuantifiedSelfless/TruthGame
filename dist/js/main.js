@@ -51795,6 +51795,12 @@ module.exports = yeast;
 AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
 var AppActions = {
+    startGame: function(item) {
+        AppDispatcher.handleViewAction({
+            actionType: "START_GAME",
+            item: item
+        })
+    }, 
     hideAnswer: function() {
         AppDispatcher.handleViewAction({
             actionType: "HIDE_ANSWER"
@@ -51976,7 +51982,9 @@ var PlayerAnswer = React.createClass({displayName: "PlayerAnswer",
     },
 
     render: function() {
-        return true; 
+        return (
+            React.createElement("div", null)
+        ); 
     }
     
 });
@@ -52076,6 +52084,7 @@ PlayerAnswer = require('./app-playeranswer.js');
 FinalState = require('./app-finalstate.js');
 io = require('socket.io-client');
 
+var gameStart = false;
 var socket2 = io.connect('http://localhost:3000')
 
 socket2.on('rfid', function(data){
@@ -52086,6 +52095,7 @@ socket2.on('rfid', function(data){
 var App = React.createClass({displayName: "App",
 
     getInitialState: function() {   
+        if (!gameStart) {AppActions.startGame(this.props.game_players)}
         return {
             score: 0,
             player1: 0,
@@ -52093,7 +52103,7 @@ var App = React.createClass({displayName: "App",
             currPlayer: AppStore.currentPlayer(),
             body: PlayerQuestions,
             question_list: AppStore.makeQuestionList(),
-            showPlayer: AppStore.gameType(),
+            showPlayer: true,
             showResults: true,
             showAnswer: false,
             answer: false,
@@ -52213,11 +52223,92 @@ module.exports = AppDispatcher;
 
 },{"flux":27,"react/lib/Object.assign":62}],220:[function(require,module,exports){
 App = require('./components/app.js'); 
+AppActions = require('./actions/app-actions.js');
 ReactDOM = require('react-dom');
+$ = require('jquery');
 
-ReactDOM.render(React.createElement(App, null), document.getElementById('main'));
+function getURLParams() {
+    var re = /[?&]([^&=]+)(?:[&=])([^&=]+)/gim;
+    var m;
+    var v={};
+    while ((m = re.exec(location.search)) != null) {
+        if (m.index === re.lastIndex) {
+        re.lastIndex++;
+    }
+    v[m[1]]=m[2];
+    }
+    return v;
+};
 
-},{"./components/app.js":218,"react-dom":40}],221:[function(require,module,exports){
+function make_AJAX_call(player_rfid, tryCount, retryLimit, player_callback){
+    $.ajax({
+        type: 'GET',
+        url: "http://quantifiedselfbackend.local:6060/truth_processor/truth",
+        data: player_rfid,
+        success: function(resp) {
+            console.log(resp);
+            //Whatever logic for a true
+            player_callback(null, resp['data']);            
+        },  
+        error: function(resp) {
+            console.log("Error: Ajax call failed"); 
+            tryCount++;
+            if (tryCount >= retryLimit){
+                //Do whatever for an error
+                window.location = "www.google.com";
+            }
+            else { //Try again with exponential backoff.
+                setTimeout(function(){ 
+                    return make_AJAX_call(player_rfid, tryCount, retryLimit);
+                }, Math.pow(2, tryCount) * 1000);
+                player_callback(resp, null);
+            }
+        }
+    });
+    
+};
+
+function prepGame() {
+    //get url
+    var player_ids;
+    var keys;
+    var player2 = false;
+    var data = [];
+    var temp_players = [];
+    var count = 0;
+    player_ids = getURLParams();
+    keys = Object.keys(player_ids) 
+    if (keys.length == 2) {
+        for (var p in player_ids) {
+            make_AJAX_call({rfid: player_ids[p]}, 0, 3, (err, data)=>{
+                if(err) {console.log('there was an error')}
+                else {
+                    temp_players.push(data);
+                    count++;
+                    if (count == 2) {
+                        ReactDOM.render(React.createElement(App, {game_players: temp_players}), document.getElementById('main'));
+                    } 
+                }
+            }); 
+        }   
+    }
+    else {
+        console.log(player_ids);
+        make_AJAX_call({rfid: player_ids['rfid0']}, 0, 3, (err, data)=>{
+                if(err) {console.log('there was an error')}
+                else {
+                    temp_players.push(data);
+                    count++;
+                    if (count == 1) {
+                        ReactDOM.render(React.createElement(App, {game_players: temp_players}), document.getElementById('main'));
+                    } 
+                }
+        }); 
+    }
+}; 
+prepGame(); 
+
+},{"./actions/app-actions.js":210,"./components/app.js":218,"jquery":33,"react-dom":40}],221:[function(require,module,exports){
 'use strict';
 
 var AppDispatcher = require('../dispatchers/app-dispatcher.js');
@@ -52310,62 +52401,20 @@ class player {
     }
 }
 
-function getURLParams() {
-    var re = /[?&]([^&=]+)(?:[&=])([^&=]+)/gim;
-    var m;
-    var v={};
-    while ((m = re.exec(location.search)) != null) {
-        if (m.index === re.lastIndex) {
-        re.lastIndex++;
-    }
-    v[m[1]]=m[2];
-    }
-    return v;
-};
-
-function startGame(players) {
+function startGame(item) {
  
-    if (one_player_game) {
-        player_1 = new player(1, true, true);
-        player1_questions = new questions(players[0]['true'], players[0]['false'], true); 
+    if (item.length == 2) {
+        one_player_game = false;
+        player_1 = new player(1, true, false);
+        player_2 = new player(2, false, false);
+        player1_questions = new questions(item[0]['true'], item[0]['false'], false); 
+        player2_questions = new questions(item[1]['true'], item[1]['false'], false);
     }
 
     else {
-        player_1 = new player(1, true, false);
-        player_2 = new player(2, false, false);
-        player1_questions = new questions(players[0]['true'], players[0]['false'], false);
-        player2_questions = new questions(players[1]['true'], players[1]['false'], false);
+        player_1 = new player(1, true, true);
+        player1_questions = new questions(item[0]['true'], item[0]['false'], true);
     }
-};
-
-
-
-function make_AJAX_call(player_rfid, tryCount, retryLimit){
-    $.ajax({
-        type: 'GET',
-        url: "http://quantifiedselfbackend.local:6060/truth_processor/truth",
-        data: player_rfid,
-        success: function(resp) {
-            console.log(resp);
-            //Whatever logic for a true
-            return resp['data'];
-        },
-        error: function(resp) {
-            console.log("Error: Ajax call failed");
-            tryCount++;
-            if (tryCount >= retryLimit){
-                //Do whatever for an error
-                window.location = "www.google.com";
-            }
-            else { //Try again with exponential backoff.
-                setTimeout(function(){ 
-                    return make_AJAX_call(player_rfid, tryCount, retryLimit);
-                }, Math.pow(2, tryCount) * 1000);
-                return false;
-            }
-        }
-    });
-    return false;
 };
 
 function activeQuestions() {
@@ -52377,29 +52426,6 @@ function activePlayer() {
     var player = player_1.isActive() ? player_1 : player_2;
     return player;
 };
-
-function prepGame() {
-    //get url
-    var player_ids;
-    var keys;
-    var player2 = false;
-    var data = [];
-    var players = [];
-    player_ids = getURLParams();
-    keys = Object.keys(player_ids) 
-    
-    if (keys.length == 2) {
-        one_player_game = false;
-    }
-
-    for (var p in player_ids) {
-        players.push(make_AJAX_call({rfid: player_ids[p]}, 0, 3)); 
-    }
-
-    return players
-};       
- 
-prepGame();
 
 var AppStore = assign(EventEmitter.prototype, {
     emitChange: function(change) {
@@ -52478,12 +52504,18 @@ var AppStore = assign(EventEmitter.prototype, {
     //event dispatcher
     dispatcherIndex: AppDispatcher.register(function(payload) {
         var action = payload.action;
-        var player = activePlayer();
-        var player_questions = activeQuestions();
-        var player_id = player_1.isActive() ? 1 : 2;
+        if (action.actionType != "START_GAME") {
+            var player = activePlayer();
+            var player_questions = activeQuestions();
+            var player_id = player_1.isActive() ? 1 : 2;
+        }
         switch(action.actionType) {
+            case "START_GAME":
+                startGame(action.item);
+                break;      
+            
             case "CHANGE_SCORE":
-                if (payload.action.item.answer) {
+                if (action.item.answer) {
                     player.addScore();
                     AppStore.emitChange('score_update' + player_id);
                 }

@@ -1,6 +1,12 @@
 AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
 var AppActions = {
+    startGame: function(item) {
+        AppDispatcher.handleViewAction({
+            actionType: "START_GAME",
+            item: item
+        })
+    }, 
     hideAnswer: function() {
         AppDispatcher.handleViewAction({
             actionType: "HIDE_ANSWER"
