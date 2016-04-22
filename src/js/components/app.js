@@ -43,7 +43,7 @@ var App = React.createClass({
         AppStore.addChangeListener('final_state', this._finalState);
         AppStore.addChangeListener('show_answer', this._showAnswer);
         AppStore.addChangeListener('update_question', this._hideAnswer);
-        if (this.state.gameType) {
+        if (!this.state.gameType) {
             AppStore.addChangeListener('score_update2', this._onChange2);
             AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
             AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
@@ -86,7 +86,7 @@ var App = React.createClass({
         this.setState({
             showPlayer: true,
             body: PlayerQuestions,
-            t_question_list: AppStore.makeQuestionList(),
+            question_list: AppStore.makeQuestionList(),
             showResults: true
         });
     },
@@ -96,7 +96,7 @@ var App = React.createClass({
             showPlayer: false,
             showResults: false,
             showAnswer: false,
-            score: AppStore.getGameWinner(this.state.gameType),
+            finishGame: AppStore.getFinishGame(),
             body: FinalState
         });
     },
@@ -117,7 +117,7 @@ var App = React.createClass({
             <div>
                 {!this.state.gameType ? temp1 : temp2}
                 <div>
-                    <this.state.body player={this.state.currPlayer} questions={this.state.question_list} score={this.state.score} />
+                    <this.state.body player={this.state.currPlayer} finishGame={this.state.finishGame} questions={this.state.question_list} score={this.state.score} />
                 </div>
                 <div>
                     <div>{this.state.showPlayer ? <PlayerPick stuff={this.state.currPlayer} /> : null}</div>

@@ -51868,17 +51868,54 @@ module.exports = AnswerScreen;
 
 },{"../actions/app-actions.js":210,"react":196}],212:[function(require,module,exports){
 React = require('react');
+AppStore = require('../stores/app-store.js');
 
 FinalState = React.createClass({displayName: "FinalState", 
     render: function() {
+        var temp;
+        var final_message;
+        switch(this.props.finishGame) {
+            case 'One Player Game':
+                temp = (
+                    React.createElement("div", null, 
+                        React.createElement("h1", {className: "victory center"}, "Player 1 was the only player."), 
+                        React.createElement("h1", {className: "victory center"}, "A message from DesignCraft:"), 
+                        React.createElement("h1", {className: "victory center"}, "Player 1: " + AppStore.final_op_gt())
+                    )
+                )
+                break;                               
+            case 'Game Tied':
+                temp = (
+                    React.createElement("div", null, 
+                        React.createElement("h1", {className: "victory center"}, "Both Players Tied!"), 
+                        React.createElement("h1", {className: "victory center"}, "A message from DesignCraft:"), 
+                        React.createElement("h1", {className: "victory center"}, "Players: " + AppStore.final_op_gt())
+                    )
+                )
+                break; 
+            case 'Game Winner':
+                final_message = AppStore.final_two_player();
+                temp = (
+                    React.createElement("div", null, 
+                        React.createElement("h1", {className: "victory center"}, AppStore.getFinalTitle()), 
+                        React.createElement("h1", {className: "victory center"}, "A message from DesignCraft:"), 
+                        React.createElement("h1", {className: "victory center"}, 'Player 1: ' + final_message.player1), 
+                        React.createElement("h1", {className: "victory center"}, 'Player 2: ' + final_message.player2)
+                    )
+                )
+                break;
+            break;
+        }
         return (
-            React.createElement("h1", {className: "victory"}, this.props.score)
+            React.createElement("div", null, 
+                temp
+            )
         )
     }
 });
 module.exports = FinalState; 
 
-},{"react":196}],213:[function(require,module,exports){
+},{"../stores/app-store.js":221,"react":196}],213:[function(require,module,exports){
 React = require('react');
 AppActions = require('../actions/app-actions.js');
 io = require('socket.io-client');
@@ -52116,7 +52153,7 @@ var App = React.createClass({displayName: "App",
         AppStore.addChangeListener('final_state', this._finalState);
         AppStore.addChangeListener('show_answer', this._showAnswer);
         AppStore.addChangeListener('update_question', this._hideAnswer);
-        if (this.state.gameType) {
+        if (!this.state.gameType) {
             AppStore.addChangeListener('score_update2', this._onChange2);
             AppStore.addChangeListener('switch_to_flipscreen', this._fliptoChange);
             AppStore.addChangeListener('switch_from_flipscreen', this._flipfromChange);
@@ -52159,7 +52196,7 @@ var App = React.createClass({displayName: "App",
         this.setState({
             showPlayer: true,
             body: PlayerQuestions,
-            t_question_list: AppStore.makeQuestionList(),
+            question_list: AppStore.makeQuestionList(),
             showResults: true
         });
     },
@@ -52169,7 +52206,7 @@ var App = React.createClass({displayName: "App",
             showPlayer: false,
             showResults: false,
             showAnswer: false,
-            score: AppStore.getGameWinner(this.state.gameType),
+            finishGame: AppStore.getFinishGame(),
             body: FinalState
         });
     },
@@ -52190,7 +52227,7 @@ var App = React.createClass({displayName: "App",
             React.createElement("div", null, 
                 !this.state.gameType ? temp1 : temp2, 
                 React.createElement("div", null, 
-                    React.createElement(this.state.body, {player: this.state.currPlayer, questions: this.state.question_list, score: this.state.score})
+                    React.createElement(this.state.body, {player: this.state.currPlayer, finishGame: this.state.finishGame, questions: this.state.question_list, score: this.state.score})
                 ), 
                 React.createElement("div", null, 
                     React.createElement("div", null, this.state.showPlayer ? React.createElement(PlayerPick, {stuff: this.state.currPlayer}) : null), 
@@ -52255,7 +52292,7 @@ function make_AJAX_call(player_rfid, tryCount, retryLimit, player_callback){
             tryCount++;
             if (tryCount >= retryLimit){
                 //Do whatever for an error
-                window.location = "www.google.com";
+                window.location = "http://localhost:8000?error=try_again";
             }
             else { //Try again with exponential backoff.
                 setTimeout(function(){ 
@@ -52320,29 +52357,21 @@ var $ = require('jquery');
 
 var one_player_game = true;
 var count = 0;
+var two_player_count = 0;
 var player1_statements;
 var player2_statements;
 var second_ajax_call = false;
-// = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
-//'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
 var player_1;
 var player_2;
 var player1_questions;
 var player2_questions;
-var false_statements = [false, 'You have used \"Your\" incorrectly on social media 74% of the time', 'You have 18 pending facebook messages you never responded to', 'You are friends with your mother on facebook', 'a', 'b']
-//'c', 'd', 'e', 'f', 'h', 'i', 'j', 'k', 'l', 'm', 'n'];
-//replace with database call
-//var player1_statements = [true, 'You have 759 friends on facebook', 'You\'ve said pasta 57 times in the last 3 years', 'You are more active on twitter after 9 pm', 'You\'ve commented \"Happy Birthday\" to 278 people since you started your first social media account', 'a']
-//'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; 
 
-
-function create_object(arr) {
+function create_object(arr, truth) {
     var temp = [];
-    for (var i = 1; i<arr.length; i++) {
+    for (var i = 0; i<arr.length; i++) {
         temp.push({
-            'id': i,
             'title': arr[i],
-            'answer': arr[0]
+            'answer': truth
         });
     }
     return temp;
@@ -52352,8 +52381,8 @@ function create_object(arr) {
 class questions {
 
     constructor(t_statements, f_statements, number_of_players) {
-        this.true = create_object(t_statements);
-        this.false = create_object(f_statements);
+        this.true = create_object(t_statements, true);
+        this.false = create_object(f_statements, false);
         this.total = this.true.concat(this.false);
         this.one_player_game = number_of_players;
         this.buttonList = [];
@@ -52362,16 +52391,16 @@ class questions {
     create_button_list() {
         this.total = lodash.shuffle(this.total); 
         if (this.one_player_game) return this.total
+        this.buttonList = [];
         for (var i = 0; i<5; i++) {
             this.buttonList.push(this.total[i]);
         }
         this.total = lodash.slice(this.total, 5);
-        this.length = this.buttonList.length;
+        console.log('total' + this.total);
+        console.log('button' + this.buttonList);
+        console.log('tl' + this.total.length);
+        console.log('tb' + this.buttonList.length);
         return this.buttonList;
-    }
-
-    clearButtons() {
-        this.buttonList = [];
     }
 }
 
@@ -52402,7 +52431,7 @@ class player {
 }
 
 function startGame(item) {
- 
+     
     if (item.length == 2) {
         one_player_game = false;
         player_1 = new player(1, true, false);
@@ -52427,6 +52456,54 @@ function activePlayer() {
     return player;
 };
 
+function gameTied() {
+    return (player_1.score == player_2.score)
+};
+
+function performance(score, gameWinner) {
+    var temp;
+    if (score < 33) {
+        if (one_player_game) {
+            temp = "We at DesignCraft find that you were very easy to manipulate. Perhaps some time to reflect on your misdirected beliefs would benefit your future."
+            return temp;
+        } 
+        if (gameTied()) { return temp = "We at DesignCraft are disappointed with both of your lack of prespectives." }
+        if (!gameWinner) {
+            temp = "We at DesignCraft find that you were very easy to manipulate. Perhaps some time to reflect on your misdirected beliefs would benefit your future."
+        }
+        if (gameWinner) {
+            temp = "We at DesignCraft find that you were easy to manipulate. You won entirely by chance, and we expect you to do better in the future."
+        }
+    }
+    if (score > 33 && score < 66) {
+        if (one_player_game) {
+            temp = "We at DesignCraft find that you were somewhat knowledgeable. You have room for improvement, you are not a lost cause."
+            return temp
+        }
+        if (gameTied()) { return temp = "We at DesignCraft are unimpressed with both of your average performances." }
+        if (!gameWinner) {
+            temp = "We at DesignCraft find that you were somewhat knowledgeable. You have room for improvement, you are not a lost cause."
+        }
+        if (gameWinner) {
+            temp = "We at DesignCraft find that you were somewhat knowledgeable. You bested your opponent and performed adequately."
+        }
+    }
+    if (score > 66) {
+        if (one_player_game) {
+            temp = "We at DesignCraft were very impressed with your performance. We will consider you a candidate for employment." 
+            return temp;
+        }
+        if (gameTied()) { return temp = "An admirable performance from the both of you. We at DesignCraft see great things in your future." }
+        if (!gameWinner) {
+            temp = "We at DesignCraft were impressed with your performance. You have potential for great things."
+        }
+        if (gameWinner) {
+            temp = "We at DesignCraft were very impressed with your performance. We will consider you a candidate for employment."
+        }
+    }
+    return temp;
+};
+
 var AppStore = assign(EventEmitter.prototype, {
     emitChange: function(change) {
         this.emit(change);
@@ -52449,15 +52526,38 @@ var AppStore = assign(EventEmitter.prototype, {
         return player_2.isActive();
     },
 
-    getGameWinner: function(gameType) {
-        var temp;
-        if (!gameType) {
-            if (player_1.score == player_2.score) {temp = 'Both Players tied!';}
-            else  {temp = (player_1.score > player_2.score) ? 'Player 1 was victorious' : 'Player 2 was victorious';}
-        }
-        else temp = "Player 1 was victorious";
+    getFinalTitle: function() {
+        var temp = (player_1.score > player_2.score) ? 'Player 1 won the Truth Game.' : 'Player 2 was won the Truth Game.';
         return temp;
     },
+
+    getFinishGame: function() {
+        if (one_player_game) { return 'One Player Game'}
+        if (player_1.score == player_2.score) { return 'Game Tied'}
+        else { return 'Game Winner' }
+    }, 
+
+    final_two_player: function() {
+        var temp;
+        var temp2;
+        var message;
+        var message2;
+        var player1;
+        var player2;
+        player1 = (player_1.score > player_2.score);
+        player2 = (player_2.score > player_1.score);
+        temp = (player_1.score/10.0) * 100;
+        temp2 = (player_2.score/10.0) * 100; 
+        message = performance(temp, player1);
+        message2 = performance(temp2, player2);
+        return {player1: message, player2: message2}
+    },
+
+    final_op_gt: function() {
+        var temp = (player_1.score/10.0) * 100;
+        var message = performance(temp, true);
+        return message 
+    }, 
 
     makeQuestionList: function() {
         return activeQuestions().create_button_list();
@@ -52475,31 +52575,8 @@ var AppStore = assign(EventEmitter.prototype, {
         return player_2.score;
     },
 
-    getGameType: function(gameType, currCount, gameCount, finalState) {
-        var temp = (currCount == gameCount);
-        if (gameType && temp) {
-            AppStore.emitChange('final_state');
-            return;
-        }
-        if (!gameType && temp) { 
-            if (final_state) {
-                AppStore.emitChange('final_state');
-                return;
-            }
-            count = 0;
-            AppStore.emitChange('switch_to_flipscreen');
-            return;
-        }
-        AppStore.emitChange('update_question');
-        count++;
-        return; 
-    }, 
-
     gameType: function() {
         return one_player_game;
-    },
-    getFinalState: function() {
-        return (player_2.isActive() && (player_questions.total.length == 0))
     },
     //event dispatcher
     dispatcherIndex: AppDispatcher.register(function(payload) {
@@ -52509,6 +52586,11 @@ var AppStore = assign(EventEmitter.prototype, {
             var player_questions = activeQuestions();
             var player_id = player_1.isActive() ? 1 : 2;
         }
+        var gameType;
+        var currCount = count;
+        var gameCount;
+        var finalState; 
+        var temp;
         switch(action.actionType) {
             case "START_GAME":
                 startGame(action.item);
@@ -52518,12 +52600,12 @@ var AppStore = assign(EventEmitter.prototype, {
                 if (action.item.answer) {
                     player.addScore();
                     AppStore.emitChange('score_update' + player_id);
+                    console.log(player.score);
                 }
                 AppStore.emitChange('show_answer');
                 break;
 
             case "SWITCH_TO_FLIPSCREEN":
-                player_questions.clearButtons();
                 AppStore.emitChange('switch_to_flipscreen');
                 break;
 
@@ -52531,9 +52613,33 @@ var AppStore = assign(EventEmitter.prototype, {
                 AppStore.emitChange('switch_from_flipscreen');
                 break;
 
-            case "HIDE_ANSWER": 
-                if (one_player_game) AppStore.getGameType(true, count, 9, false);
-                else AppStore.getGameType(false, count, 4, getFinalState());
+            case "HIDE_ANSWER":
+                currCount = count;
+                if (one_player_game) { 
+                    gameType = true; 
+                    gameCount = 14; 
+                }
+                else { 
+                    gameType = false; 
+                    gameCount = 4; 
+                }
+                temp = (currCount == gameCount);
+                if (gameType && temp) {
+                    AppStore.emitChange('final_state');
+                    break;
+                }
+                if (!gameType && temp) { 
+                    if (two_player_count == 24) {
+                        AppStore.emitChange('final_state');
+                        break;
+                    }
+                    count = 0;
+                    AppStore.emitChange('switch_to_flipscreen');
+                    break;
+                }
+                AppStore.emitChange('update_question');
+                two_player_count++;
+                count++;
                 break; 
 
             case "OUT_OF_QUESTIONS":

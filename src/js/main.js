@@ -31,7 +31,7 @@ function make_AJAX_call(player_rfid, tryCount, retryLimit, player_callback){
             tryCount++;
             if (tryCount >= retryLimit){
                 //Do whatever for an error
-                window.location = "www.google.com";
+                window.location = "http://localhost:8000?error=try_again";
             }
             else { //Try again with exponential backoff.
                 setTimeout(function(){ 
