@@ -116,41 +116,41 @@ function performance(score, gameWinner) {
     var temp;
     if (score < 33) {
         if (one_player_game) {
-            temp = "We at DesignCraft find that you were very easy to manipulate. Perhaps some time to reflect on your misdirected beliefs would benefit your future."
+            temp = "Your performance shows you are very easy to manipulate. You should reflect on your misdirected beliefs."
             return temp;
         } 
-        if (gameTied()) { return temp = "We at DesignCraft are disappointed with both of your lack of prespectives." }
+        if (gameTied()) { return temp = "You are both extremely dillusioned. DesignCraft is disappointed." }
         if (!gameWinner) {
-            temp = "We at DesignCraft find that you were very easy to manipulate. Perhaps some time to reflect on your misdirected beliefs would benefit your future."
+            temp = "Your performance shows you are very easy to manipulate. You should reflect on your misdirected beliefs."
         }
         if (gameWinner) {
-            temp = "We at DesignCraft find that you were easy to manipulate. You won entirely by chance, and we expect you to do better in the future."
+            temp = "You won entirely by chance, and we expect you to do better in the future."
         }
     }
     if (score > 33 && score < 66) {
         if (one_player_game) {
-            temp = "We at DesignCraft find that you were somewhat knowledgeable. You have room for improvement, you are not a lost cause."
+            temp = "You were somewhat knowledgeable, but there's room for improvement. We'll be in touch."
             return temp
         }
-        if (gameTied()) { return temp = "We at DesignCraft are unimpressed with both of your average performances." }
+        if (gameTied()) { return temp = "We are unimpressed with both of your average performances." }
         if (!gameWinner) {
-            temp = "We at DesignCraft find that you were somewhat knowledgeable. You have room for improvement, you are not a lost cause."
+            temp = "You were somewhat knowledgeable, but there's room for improvement. We'll be in touch."
         }
         if (gameWinner) {
-            temp = "We at DesignCraft find that you were somewhat knowledgeable. You bested your opponent and performed adequately."
+            temp = "You were somewhat knowledgeable, and you bested your opponent. We'll be in touch."
         }
     }
     if (score > 66) {
         if (one_player_game) {
-            temp = "We at DesignCraft were very impressed with your performance. We will consider you a candidate for employment." 
+            temp = "Very impressive. We think you're DesignCraft material.." 
             return temp;
         }
-        if (gameTied()) { return temp = "An admirable performance from the both of you. We at DesignCraft see great things in your future." }
+        if (gameTied()) { return temp = "An admirable performance from the both of you. We see great things in your future." }
         if (!gameWinner) {
-            temp = "We at DesignCraft were impressed with your performance. You have potential for great things."
+            temp = "We were impressed with your performance. You have potential for great things."
         }
         if (gameWinner) {
-            temp = "We at DesignCraft were very impressed with your performance. We will consider you a candidate for employment."
+            temp = "Very impressive. We think you're DesignCraft material.."
         }
     }
     return temp;
