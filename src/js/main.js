@@ -23,7 +23,6 @@ function make_AJAX_call(player_rfid, tryCount, retryLimit, player_callback){
         data: player_rfid,
         success: function(resp) {
             console.log(resp);
-            //Whatever logic for a true
             player_callback(null, resp['data']);            
         },  
         error: function(resp) {
