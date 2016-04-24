@@ -26,11 +26,12 @@ var PlayerQuestions = React.createClass({
     render: function() {
         return  (
             <div>
-                <div>
+                <div className="bubble">
                     <h3>{this.props.questions[this.state.question_state].title}</h3>
                 </div>
                 <div>
-                    <PlayerAnswer item={this.props.questions[this.state.question_state]} />
+                    <PlayerAnswer socket={this.props.socket} player={this.props.player} item={this.props.questions[this.state.question_state].answer}/>
+		    <img className="tree" src="Tree.png" alt="Design Craft Tree Logo"></img>
                 </div>
             </div>
         )

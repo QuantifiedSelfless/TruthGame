@@ -18,19 +18,23 @@
   "homepage": "https://github.com/QuantifiedSelfless/TruthGame#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
-    "httpster": "^1.0.3"
+    "httpster": "^1.0.3",
+    "socket.io-client": "^1.4.5"
   },
   "dependencies": {
     "basscss": "^8.0.1",
     "browserify": "^13.0.0",
     "flex-object": "^2.0.5",
     "flux": "^2.1.1",
+    "fs": "0.0.2",
+    "jquery": "^2.2.3",
     "lodash": "^4.6.1",
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-global": "^0.1.8",
     "react-router-component": "^0.31.4",
     "reactify": "^1.1.1",
+    "socket.io": "^1.4.5",
     "vinyl-source-stream": "^1.1.0"
   }
 }
