@@ -68,7 +68,7 @@ function prepGame() {
     }
     else {
         console.log(player_ids);
-        make_AJAX_call({rfid: player_ids['rfid0']}, 0, 3, (err, data)=>{
+        make_AJAX_call({rfid: player_ids['rfid']}, 0, 3, (err, data)=>{
                 if(err) {console.log('there was an error')}
                 else {
                     temp_players.push(data);
