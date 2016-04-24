@@ -41,6 +41,7 @@ class questions {
     }
 
     create_button_list() {
+        console.log("hello");
         this.total = lodash.shuffle(this.total); 
         if (this.one_player_game) return this.total
         this.buttonList = [];
@@ -48,10 +49,6 @@ class questions {
             this.buttonList.push(this.total[i]);
         }
         this.total = lodash.slice(this.total, 5);
-        console.log('total' + this.total);
-        console.log('button' + this.buttonList);
-        console.log('tl' + this.total.length);
-        console.log('tb' + this.buttonList.length);
         return this.buttonList;
     }
 }
@@ -93,6 +90,7 @@ function startGame(item) {
     }
 
     else {
+        console.log(item[0]['true'], item[0]['false']);
         player_1 = new player(1, true, true);
         player1_questions = new questions(item[0]['true'], item[0]['false'], true);
     }
