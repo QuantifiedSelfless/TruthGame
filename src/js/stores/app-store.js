@@ -142,7 +142,7 @@ function performance(score, gameWinner) {
     }
     if (score > 66) {
         if (one_player_game) {
-            temp = "Very impressive. We think you're DesignCraft material.." 
+            temp = "Very impressive. We think you're DesignCraft material." 
             return temp;
         }
         if (gameTied()) { return temp = "An admirable performance from the both of you. We see great things in your future." }
@@ -179,7 +179,7 @@ var AppStore = assign(EventEmitter.prototype, {
     },
 
     getFinalTitle: function() {
-        var temp = (player_1.score > player_2.score) ? 'Player 1 won the Truth Game.' : 'Player 2 was won the Truth Game.';
+        var temp = (player_1.score > player_2.score) ? 'Player 1 won the Truth Game.' : 'Player 2 won the Truth Game.';
         return temp;
     },
 
